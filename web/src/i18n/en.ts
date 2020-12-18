@@ -128,6 +128,7 @@ export default {
             title: "Login failed",
             badCredentials: "Please check your username and password.",
           },
+          toRegister: "Register",
         },
         register: {
           title: "Register",

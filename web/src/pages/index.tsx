@@ -1,119 +1,131 @@
-import { HomePageLayout } from "src/pageComponents/Home/HomePageLayout";
-import { PageIndicator } from "src/pageComponents/Home/PageIndicator";
-import { Form, Input, Checkbox } from "antd";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
-import { useStore } from "simstate";
-import { UserStore } from "src/stores/UserStore";
-import { FormButton } from "src/pageComponents/Home/HomePageLayout";
-import { PageMetadata } from "src/utils/PageMetadata";
-import { required } from "src/utils/validateMessages";
+import {
+  Box, FormField,
+  TextInput, Button, CheckBox, Heading,
+} from "grommet";
 import { lang } from "src/i18n";
-import { LocalizedString, useLocalized } from "simstate-i18n";
-import styled from "styled-components";
+import { LocalizedString } from "simstate-i18n";
 import { getApi } from "src/apis";
 import { authApis } from "src/apis/auth";
-import { useNotification } from "src/utils/NotificationHelper";
-import { useHttpRequest } from "src/utils/http";
-import { HttpError } from "src/apis/fetch";
+import { useStore } from "simstate";
+import { UserStore } from "src/stores/UserStore";
+import { useRouter } from "next/router";
+import { emailValidation } from "src/utils/validations/emailValidation";
+import { useHttpRequest } from "src/utils/useHttpErrorHandler";
+import { AnchorLink } from "src/components/AnchorLink";
+import { toast } from "react-toastify";
+import { Form } from "src/components/form/Form";
+import { queryToString } from "src/utils/querystring";
 
 const root = lang.pages.home.login;
 
+const defaultValue = { id: "", password: "", remember: true };
+
+const api = getApi(authApis);
+
 const LoginForm: React.FC = () => {
+  const router = useRouter();
+
+  const pathname = queryToString(router.query.pathname);
+  const asPath = queryToString(router.query.asPath);
 
   const userStore = useStore(UserStore);
+  const [value, setValue] = useState(defaultValue);
+  const [inProgress, setInProgress] = useState(false);
+  const request = useHttpRequest(setInProgress);
 
-  const api = useNotification();
+  const jumpBackOrDefault = async (defaultPath: string) => {
+    if (pathname) {
+      await router.push(pathname, asPath);
+    } else {
+      await router.push(defaultPath);
+    }
+  };
 
-  const [loggingIn, setLoggingIn] = useState(false);
-  const request = useHttpRequest(setLoggingIn);
-
-  const onFinish = (values: { [key: string]: any }) => request(async () => {
-    const { username, password, remember } = values;
+  const login = () => request(async () => {
+    const { id, password, remember } = value;
     try {
-      const api = getApi(authApis);
-      const resp = await api.login({ query: { username, password } });
+      const res = await api.login({ query: { id, password } });
+      toast.success(
+        <LocalizedString id={root.success} />
+      );
 
       userStore.login({
-        userId: resp.userId,
-        username,
-        token: resp.token,
-        remember,
+        email: id,
+        name: res.name,
+        token: res.token,
+        remember: remember,
+        role: res.role,
+        id: res.userId,
       });
+      if (res.role === "admin"){
+        await jumpBackOrDefault("/admin/articles");
+      } else {
+        await jumpBackOrDefault("/");
+      }
     } catch (e) {
-      if ((e as HttpError).status === 401) {
-        api.error({
-          message: <LocalizedString id={root.error.title} />,
-          description: <LocalizedString id={root.error.badCredentials} />,
-        });
+      console.log(e);
+      if (e.status === 401) {
+        toast.error(
+          <LocalizedString id={root.invalid} />
+        );
       } else {
         throw e;
       }
     }
   });
 
-  const username = useLocalized(root.username) as string;
-  const password = useLocalized(root.password) as string;
-
   return (
-    <Form
-      name="normal_login"
-      className="login-form"
-      initialValues={{ remember: true }}
-      onFinish={onFinish}
-    >
-      <PageMetadata titleId={root.title} />
-      <Form.Item
-        name="username"
-        rules={[{ required: true, message: required }]}
+    <Form value={value} onChange={setValue} onSubmit={login} validate="blur">
+      <FormField
+        label={<LocalizedString id={root.id} />}
+        name="id" required={true}
+        disabled={inProgress}
+        validate={emailValidation}
       >
-        <Input
-          disabled={loggingIn}
-          prefix={<UserOutlined className="site-form-item-icon" />}
-          placeholder={username}
-        />
-      </Form.Item>
-      <Form.Item
-        name="password"
-        rules={[{ required: true, message: required }]}
+        <TextInput name="id"/>
+      </FormField>
+      <FormField
+        label={<LocalizedString id={root.password} />} name="password" required={true}
+        disabled={inProgress}
       >
-        <Input
-          prefix={<LockOutlined className="site-form-item-icon" />}
-          type="password"
-          disabled={loggingIn}
-          placeholder={password}
+        <TextInput type="password" name="password"/>
+      </FormField>
+      <Box margin={{ vertical: "small" }}>
+        <CheckBox
+          name="remember" label={<LocalizedString id={root.remember} />}
         />
-      </Form.Item>
-      <Form.Item>
-        <Form.Item name="remember" valuePropName="checked" noStyle>
-          <Checkbox disabled={loggingIn}><LocalizedString id={root.remember} /></Checkbox>
-        </Form.Item>
-
-        <ForgotLink>
+      </Box>
+      <Box>
+        <Button
+          type="submit"
+          label={<LocalizedString id={inProgress ? root.inProgress : root.login} />}
+          primary={true}
+          disabled={inProgress}
+        />
+      </Box>
+      <Box direction="row" justify="between" margin={{ top: "small" }}>
+        <AnchorLink href={{ pathname: "/forget", query: { email: value.id } }}>
           <LocalizedString id={root.forget} />
-        </ForgotLink>
-      </Form.Item>
-      <Form.Item>
-        <FormButton loading={loggingIn} type="primary" htmlType="submit">
-          <LocalizedString id={root.login} />
-        </FormButton>
-      </Form.Item>
-    </Form >
+        </AnchorLink>
+        <AnchorLink href="/register">
+          <LocalizedString id={root.register} />
+        </AnchorLink>
+      </Box>
+    </Form>
   );
 };
 
-
-const ForgotLink = styled.a`
-  float: right;
-`;
-
-
-
 export const LoginPage: React.FC = () => {
   return (
-    <HomePageLayout title={<PageIndicator value={"login"}/>}>
-      <LoginForm />
-    </HomePageLayout>
+    <Box align="center" justify="center" pad="medium" flex="grow">
+      <Box width="medium" border="all" pad="medium" elevation="small">
+        <Heading alignSelf="center" level="2" margin="none">
+          <LocalizedString id={root.login} />
+        </Heading>
+        <LoginForm />
+      </Box>
+    </Box>
   );
 };
 

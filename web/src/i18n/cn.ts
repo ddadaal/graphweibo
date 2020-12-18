@@ -124,6 +124,7 @@ export default {
             title: "登录失败",
             badCredentials: "请检查您的用户名和密码",
           },
+          toRegister: "注册",
         },
         register: {
           title: "注册",
