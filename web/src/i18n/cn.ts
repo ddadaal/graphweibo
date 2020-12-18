@@ -18,18 +18,12 @@ export default {
         commaToSplit: "逗号分割的每一项将会单独添加为一项。",
       },
       httpHandler: {
-        tokenInvalid: {
-          title: "登录状态过期",
-          description: "您的登录状态已经过期。请重新登录后继续。",
-        },
-        serverError: {
-          title: "服务器出错",
-          description: "抱歉，服务器出错了，请重试或者联系支持。",
-        },
-        networkError: {
-          title: "网络连接出错",
-          description: "请检查本地网络是否已经连通，或服务器开了小差……",
-        },
+        tokenInvalid:
+           "您的登录状态已经过期。请重新登录后继续。",
+        serverError:
+           "抱歉，服务器出错了，请重试或者联系支持。",
+        networkError:
+           "请检查本地网络是否已经连通，或服务器开了小差……",
       },
       errors: {
         notAuthorized: {
@@ -118,25 +112,28 @@ export default {
           username: "用户名",
           password: "密码",
           login: "登录",
+          inProgress: "登录中……",
           remember: "记住我",
           forget: "忘记密码",
           error: {
             title: "登录失败",
             badCredentials: "请检查您的用户名和密码",
           },
-          toRegister: "注册",
+          toRegister: "去注册",
         },
         register: {
           title: "注册",
           username: "用户名",
           password: "密码",
           register: "注册",
+          inProgress: "注册中……",
           remember: "记住我",
           error: {
             title: "注册失败",
-            badCredentials: "用户名已经被占用，请重新换一个！",
+            conflict: "用户名已经被占用，请重新换一个！",
           },
           success: "注册成功！已经自动登录您的账户。",
+          toLogin: "去登录",
         },
       },
     },

@@ -22,18 +22,9 @@ export default {
         description: "You are not authorized to access this page. Please login as required user and try again.",
       },
       httpHandler: {
-        tokenInvalid: {
-          title: "Login expired",
-          description: "Your login session is expired or invalid. Please re-login.",
-        },
-        serverError: {
-          title: "Server error",
-          description: "We are sorry that a server error occurred. Please retry or contact support.",
-        },
-        networkError: {
-          title: "Network error",
-          description:"Please check your local network, or our network is down.",
-        },
+        tokenInvalid: "Your login session is expired or invalid. Please re-login.",
+        serverError:  "We are sorry that a server error occurred. Please retry or contact support.",
+        networkError: "Please check your local network, or our network is down.",
       },
       errors: {
         notAuthorized: {
@@ -122,25 +113,28 @@ export default {
           username: "Username",
           password: "Password",
           login: "Login",
+          inProgress: "Logging in...",
           remember: "Remember me",
           forget: "Forget password",
           error: {
             title: "Login failed",
             badCredentials: "Please check your username and password.",
           },
-          toRegister: "Register",
+          toRegister: "To Register",
         },
         register: {
           title: "Register",
           username: "Username",
           password: "Password",
           register: "Reigster",
+          inProgress: "Registering...",
           remember: "Remember",
           error: {
             title: "Register failed",
-            badCredentials: "This username has been token. Please choose another one.",
+            conflict: "This username has been token. Please choose another one.",
           },
           success: "Register succeed! You have been logged in.",
+          toLogin: "To Login",
         },
       },
     },

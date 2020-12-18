@@ -1,23 +1,14 @@
 /* eslint-disable */
-const fs = require('fs')
 const path = require('path')
 const withPlugins = require('next-compose-plugins')
 const withTranspileModules = require("next-transpile-modules");
-const withAntdLess = require('next-plugin-antd-less')
+const images = require("next-images");
 
 module.exports = withPlugins([
-  // withAntdLess({
-  //   lessVarsFilePath: "./src/styles/antd-custom.less",
-  //   cssLoaderOptions: {
-
-  //   },
-  //   webpack(config) {
-  //     return config;
-  //   }
-  // }),
   withTranspileModules([
     "graphweibo-api",
   ])(),
+  [images, {}],
 ], {
   publicRuntimeConfig: {
     apiRoot: process.env.API_ROOT,
