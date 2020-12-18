@@ -1,0 +1,22 @@
+{
+  "name": "graphweibo-api",
+  "version": "1.0.0",
+  "description": "",
+  "sideEffects": false,
+  "scripts": {
+    "api": "ts-node -T ./generateApiSchemas.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^14.14.14",
+    "@typescript-eslint/eslint-plugin": "^4.10.0",
+    "@typescript-eslint/parser": "^4.10.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^7.15.0",
+    "ts-json-schema-generator": "^0.80.1",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.3"
+  }
+}
