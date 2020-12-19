@@ -1,4 +1,4 @@
-import { Avatar, Box, Paragraph, Text } from "grommet";
+import { Avatar, Box, Text } from "grommet";
 import React from "react";
 import { WeiboInfo } from "src/models/weibo";
 import { formatDateTime } from "src/utils/datetime";

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Avatar, Box, Button, Heading, Paragraph, Text } from "grommet";
-import { AnchorLink } from "./AnchorLink";
+import { Avatar, Box, Button, Text } from "grommet";
 import { UserInfo } from "src/models/UserInfo";
 import { LocalizedString } from "simstate-i18n";
 import { lang } from "src/i18n";

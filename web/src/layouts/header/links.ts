@@ -17,7 +17,6 @@ export const commonLinks = [
 ] as TLink[];
 
 export const userLinks = [
-  { href: "/upload", textId: root.upload, mode: "startsWith" },
   { href: "/dashboard", textId: root.dashboard, mode: "startsWith" },
 ] as TLink[];
 

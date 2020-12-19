@@ -1,5 +1,5 @@
 import React from "react";
-import { BoxProps, Box, Heading } from "grommet";
+import { BoxProps, Box } from "grommet";
 
 interface Props extends BoxProps {
 }

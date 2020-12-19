@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Heading, Paragraph } from "grommet";
+import { Box, Heading } from "grommet";
 import { LocalizedString } from "simstate-i18n";
 
 interface Props {

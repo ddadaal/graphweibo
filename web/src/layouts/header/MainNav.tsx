@@ -9,7 +9,7 @@ import { useRouter, NextRouter } from "next/router";
 import { Menu as MenuIcon } from "grommet-icons";
 import Link from "next/link";
 import { Media } from "src/styles/media";
-import { TLink, commonLinks, adminLinks, userLinks } from "./links";
+import { TLink, commonLinks, userLinks } from "./links";
 import { UrlObject } from "url";
 
 const root = lang.header;
@@ -65,7 +65,7 @@ const Unfolded: React.FC<{
         <>
           <Greeting
             margin={{ horizontal: "medium" }}
-            name={user.name}
+            name={user.username}
           />
           {linksToAnchorLink(router,
             [...commonLinks, ...authenticatedLinks, logoutLink ])}
@@ -115,7 +115,7 @@ const Folded: React.FC<{
     user
       ? (
         <>
-          <Greeting name={user.name} />
+          <Greeting name={user.username} />
           <Menu
             plain
             items={
@@ -160,7 +160,7 @@ export const MainNav: React.FC = () => {
   const userStore = useStore(UserStore);
 
   const authenticatedLinks = userStore.user
-    ? userStore.user.role === "admin" ? adminLinks : userLinks
+    ? userLinks
     : [];
 
   const router = useRouter();

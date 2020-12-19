@@ -1,6 +1,5 @@
 import React from "react";
-import { Box, TextArea } from "grommet";
-import { Logo } from "src/components/Logo";
+import { Box } from "grommet";
 import { WeiboInput } from "src/components/WeiboInput";
 import { NextPage } from "next";
 import { getApi } from "src/apis";
@@ -42,7 +41,7 @@ const Home: NextPage<Props> = (props) => {
   );
 };
 
-Home.getInitialProps = async (context) => {
+Home.getInitialProps = async () => {
   const data = await api.get({})
     .catch((r: HttpError) => ({ error: r }));
 
