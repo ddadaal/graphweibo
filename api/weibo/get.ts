@@ -5,6 +5,9 @@ export const endpoint = {
 
 export interface GetWeiboResult {
 
+  /** 这个微博的ID */
+  weiboId: string;
+
   /** 发送的用户ID */
   senderId: string;
 

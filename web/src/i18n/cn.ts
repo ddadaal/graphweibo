@@ -11,6 +11,8 @@ export default {
         submit: "发送",
         submitting: "发送中……",
         submitSuccess: "发送成功！",
+        textAreaLoginPrompt: "想告诉大家新鲜事？请先登录！",
+        buttonLoginPrompt: "去登录",
       },
       userListItem: {
         weiboCount: "微博数",

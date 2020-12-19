@@ -7,10 +7,12 @@ export default {
   definitions: {
     components: {
       weiboInput: {
-        placeholder: "Something interesting?" ,
+        placeholder: "Something interesting to share?" ,
         submit: "Send",
         submitting: "Sending...",
         submitSuccess: "Send Complete!",
+        textAreaLoginPrompt: "Would like to share something interesting? Please login.",
+        buttonLoginPrompt: "To Login",
       },
       userListItem: {
         weiboCount: "Weibo Count",
