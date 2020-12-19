@@ -7,8 +7,8 @@ import { delay } from "src/utils/delay";
 import { isServer } from "src/utils/isServer";
 import { authApis } from "./auth";
 import { authApisMock } from "./auth.mock";
-import { searchApi } from "./search";
-import { searchApiMock } from "./search.mock";
+import { userApi } from "./user";
+import { userApiMock } from "./user.mock";
 
 export type ApiArgs = {
   jsonFetch: JsonFetch,
@@ -58,7 +58,7 @@ const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === "1";
 
 const apis = [
   [authApis, USE_MOCK ? authApisMock : authApis],
-  [searchApi, USE_MOCK ? searchApiMock : searchApi],
+  [userApi, USE_MOCK ? userApiMock : userApi],
 ];
 
 const computedApis = new Map<unknown, unknown>();

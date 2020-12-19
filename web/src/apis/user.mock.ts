@@ -1,9 +1,7 @@
-import { fromApi } from "./fetch";
-import * as api from "graphweibo-api/search/search";
 import { MockApi } from ".";
-import { searchApi } from "./search";
+import { userApi } from "./user";
 
-export const searchApiMock: MockApi<typeof searchApi> = () => ({
+export const userApiMock: MockApi<typeof userApi> = () => ({
   search: async () => {
     return {
       results: [
@@ -26,4 +24,6 @@ export const searchApiMock: MockApi<typeof searchApi> = () => ({
       ],
     };
   },
+  follow: async () => ({}),
+  unfollow: async () => ({}),
 });

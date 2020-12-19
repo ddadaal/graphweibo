@@ -13,11 +13,11 @@ import { HttpError } from "src/apis/fetch";
 import { SSRPageProps } from "src/utils/ssr";
 import { UnifiedErrorPage } from "src/components/errors/UnifiedErrorPage";
 import { useHttpErrorHandler } from "src/utils/http";
-import { searchApi } from "src/apis/search";
 import { UserListItem } from "src/components/UserListItem";
 import { UserSearchResult } from "graphweibo-api/search/search";
+import { userApi } from "src/apis/user";
 
-const api = getApi(searchApi);
+const api = getApi(userApi);
 
 type Props = SSRPageProps<{
   results: UserSearchResult[];
@@ -80,8 +80,6 @@ export const SearchPage: NextPage<Props> = (props) => {
                 <UserListItem
                   key={r.username}
                   user={r}
-                  // eslint-disable-next-line @typescript-eslint/no-empty-function
-                  onFollowClicked={() => {}}
                 />
               ))}
             </Box>

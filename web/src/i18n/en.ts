@@ -12,6 +12,10 @@ export default {
         follows: "Follows",
         follow: "Follow",
         following: "Following",
+        followInProgress: "Following...",
+        unfollowInProgress: "Unfollowing...",
+        followComplete: "Followed!",
+        unfollowComplete: "Unfollowed!",
       },
       tagInput: {
         placeholder: "Press Enter to add one item." ,
@@ -59,7 +63,7 @@ export default {
     },
     header: {
       home: "Home",
-      search: "Search",
+      search: "SearchUser",
       upload: "Upload",
       about: "About",
       login: "Login",

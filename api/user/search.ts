@@ -1,6 +1,6 @@
 export const endpoint = {
   method: "GET",
-  url: "/search",
+  url: "/user/search",
 } as const;
 
 export interface UserSearchResult {

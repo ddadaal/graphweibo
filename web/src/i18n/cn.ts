@@ -12,6 +12,10 @@ export default {
         follows: "关注数",
         follow: "关注",
         following: "已关注",
+        followInProgress: "关注中……",
+        unfollowInProgress: "取消关注中……",
+        followComplete: "关注成功！",
+        unfollowComplete: "取消关注成功！",
       },
       tagInput: {
         placeholder: "按下回车以增加一项。",
@@ -58,7 +62,7 @@ export default {
     },
     header: {
       home: "主页",
-      search: "搜索",
+      search: "搜索用户",
       login: "登录",
       about: "关于",
       welcome: "欢迎您，{}",

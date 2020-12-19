@@ -1,15 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { Avatar, Box, Button, Heading, Paragraph, Text } from "grommet";
 import { AnchorLink } from "./AnchorLink";
 import { UserInfo } from "src/models/UserInfo";
 import { LocalizedString } from "simstate-i18n";
 import { lang } from "src/i18n";
+import { getApi } from "src/apis";
+import { userApi } from "src/apis/user";
+import { useHttpRequest } from "src/utils/http";
+import { toast } from "react-toastify";
 
 const root = lang.components.userListItem;
 
+const api = getApi(userApi);
+
 interface Props {
   user: UserInfo;
-  onFollowClicked: (user: UserInfo) => void;
 }
 
 const NumberInfo: React.FC<{ textId: string; value: number}> = (props) => {
@@ -25,7 +30,24 @@ const NumberInfo: React.FC<{ textId: string; value: number}> = (props) => {
   );
 };
 
-export const UserListItem: React.FC<Props> = ({ user, onFollowClicked }) => {
+export const UserListItem: React.FC<Props> = ({ user }) => {
+
+  const [loading, setLoading] = useState(false);
+  const request = useHttpRequest(setLoading);
+  const [following, setFollowing] = useState(user.following);
+
+  const onClick = () => request(async () => {
+    setLoading(true);
+    if (following) {
+      await api.unfollow({ body: { username: user.username } });
+      toast(<LocalizedString id={root.unfollowComplete} />);
+    } else {
+      await api.follow({ body: { username: user.username } });
+      toast(<LocalizedString id={root.followComplete} />);
+    }
+    setFollowing(!following);
+    setLoading(false);
+  });
 
   return (
     <Box direction="row" gap="small" justify="between" align="center">
@@ -36,6 +58,8 @@ export const UserListItem: React.FC<Props> = ({ user, onFollowClicked }) => {
             {user.username}
           </Text>
           <Text>
+            <LocalizedString id={root.weiboCount} />
+            {" "}
             {user.weiboCount}
           </Text>
         </Box>
@@ -51,8 +75,12 @@ export const UserListItem: React.FC<Props> = ({ user, onFollowClicked }) => {
         />
         <Box width="small">
           <Button size="medium" fill label={(
-            <LocalizedString id={user.following ? root.following : root.follow} />
-          )}
+            <LocalizedString id={
+              loading
+                ? user.following ? root.unfollowInProgress : root.followInProgress
+                : following ? root.following : root.follow}
+            />
+          )} onClick={onClick} disabled={loading}
           >
           </Button>
         </Box>
