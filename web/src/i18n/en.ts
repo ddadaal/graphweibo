@@ -6,12 +6,12 @@ export default {
   name: "English",
   definitions: {
     components: {
-      fileUploader: {
-        zoneLabel: "Drag and drop your file(s) here, or click to select the file(s).",
-        "file-too-large" : "File is too large.",
-        "file-too-small": "File is too small.",
-        "too-many-files": "Too many files.",
-        "file-invalid-type": "Invalid file type.",
+      userListItem: {
+        weiboCount: "Weibo Count",
+        fans: "Fans",
+        follows: "Follows",
+        follow: "Follow",
+        following: "Following",
       },
       tagInput: {
         placeholder: "Press Enter to add one item." ,
@@ -55,11 +55,6 @@ export default {
           required: "Required",
           codeLink: "Please input repo link from {}",
         },
-      },
-      publicitySelect: {
-        title: "Public",
-        public: "Public",
-        private: "Private",
       },
     },
     header: {

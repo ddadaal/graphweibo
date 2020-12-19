@@ -6,12 +6,12 @@ export default {
   name: "简体中文",
   definitions: {
     components: {
-      fileUploader: {
-        zoneLabel: "把文件拖拽到这里，或者点击这里选择文件。",
-        "file-too-large" : "文件过大。",
-        "file-too-small": "文件过小",
-        "too-many-files": "文件数量过多",
-        "file-invalid-type": "文件类型不正确",
+      userListItem: {
+        weiboCount: "微博数",
+        fans: "粉丝",
+        follows: "关注数",
+        follow: "关注",
+        following: "已关注",
       },
       tagInput: {
         placeholder: "按下回车以增加一项。",
@@ -54,11 +54,6 @@ export default {
           required: "必填项",
           codeLink: "请输入以下网站的仓库的链接：{}",
         },
-      },
-      publicitySelect: {
-        title: "公开",
-        public: "公开",
-        private: "不公开",
       },
     },
     header: {

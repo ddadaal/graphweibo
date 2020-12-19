@@ -96,7 +96,7 @@ export const customTheme: ThemeType = deepFreeze(
     "diagram": { "line": {} },
     "meter": {},
     "button": {
-      "border": { "radius": "4px" },
+      "border": { "radius": "4px", "color": "control" },
       "active": { "background": { "color": "brand" } },
     },
     "checkBox": {

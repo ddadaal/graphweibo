@@ -1,6 +1,7 @@
 import React from "react";
-import { Box } from "grommet";
+import { Box, TextArea } from "grommet";
 import { Logo } from "src/components/Logo";
+
 
 const Home: React.FC = () => {
 
