@@ -6,8 +6,8 @@ export const endpoint = {
 /** 取消关注一个用户。 */
 export interface UnfollowUserSchema {
   body: {
-    /** 要取消关注的用户的用户名 */
-    username: string;
+    /** 要取消关注的用户的用户ID */
+    userId: string;
   };
   responses: {
     /** 取消关注成功 */

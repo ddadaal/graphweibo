@@ -6,6 +6,12 @@ export default {
   name: "简体中文",
   definitions: {
     components: {
+      weiboInput: {
+        placeholder: "有什么新鲜事想告诉大家？" ,
+        submit: "发送",
+        submitting: "发送中……",
+        submitSuccess: "发送成功！",
+      },
       userListItem: {
         weiboCount: "微博数",
         fans: "粉丝",

@@ -6,8 +6,8 @@ export const endpoint = {
 /** 关注一个用户 */
 export interface FollowUserSchema {
   body: {
-    /** 要关注的用户的用户名 */
-    username: string;
+    /** 要关注的用户的用户ID */
+    userId: string;
   };
   responses: {
     /** 关注成功 */

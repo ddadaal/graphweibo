@@ -9,6 +9,8 @@ import { authApis } from "./auth";
 import { authApisMock } from "./auth.mock";
 import { userApi } from "./user";
 import { userApiMock } from "./user.mock";
+import { weiboApi } from "./weibo";
+import { weiboApiMock } from "./weibo.mock";
 
 export type ApiArgs = {
   jsonFetch: JsonFetch,
@@ -59,6 +61,7 @@ const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === "1";
 const apis = [
   [authApis, USE_MOCK ? authApisMock : authApis],
   [userApi, USE_MOCK ? userApiMock : userApi],
+  [weiboApi, USE_MOCK ? weiboApiMock : weiboApi],
 ];
 
 const computedApis = new Map<unknown, unknown>();

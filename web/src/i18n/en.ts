@@ -6,6 +6,12 @@ export default {
   name: "English",
   definitions: {
     components: {
+      weiboInput: {
+        placeholder: "Something interesting?" ,
+        submit: "Send",
+        submitting: "Sending...",
+        submitSuccess: "Send Complete!",
+      },
       userListItem: {
         weiboCount: "Weibo Count",
         fans: "Fans",

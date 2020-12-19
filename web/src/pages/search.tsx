@@ -7,14 +7,13 @@ import { NextPage } from "next";
 import { OverlayLoading } from "src/components/loading/OverlayLoading";
 import { queryToString } from "src/utils/querystring";
 import { SearchBar } from "src/components/SearchBar";
-import { Section } from "src/components/Section";
 import { useFirstMount } from "src/utils/useFirstMount";
 import { HttpError } from "src/apis/fetch";
 import { SSRPageProps } from "src/utils/ssr";
 import { UnifiedErrorPage } from "src/components/errors/UnifiedErrorPage";
 import { useHttpErrorHandler } from "src/utils/http";
 import { UserListItem } from "src/components/UserListItem";
-import { UserSearchResult } from "graphweibo-api/search/search";
+import { UserSearchResult } from "graphweibo-api/user/search";
 import { userApi } from "src/apis/user";
 
 const api = getApi(userApi);

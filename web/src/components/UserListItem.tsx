@@ -37,16 +37,14 @@ export const UserListItem: React.FC<Props> = ({ user }) => {
   const [following, setFollowing] = useState(user.following);
 
   const onClick = () => request(async () => {
-    setLoading(true);
     if (following) {
-      await api.unfollow({ body: { username: user.username } });
-      toast(<LocalizedString id={root.unfollowComplete} />);
+      await api.unfollow({ body: { username: user.userId } });
+      toast.success(<LocalizedString id={root.unfollowComplete} />);
     } else {
-      await api.follow({ body: { username: user.username } });
-      toast(<LocalizedString id={root.followComplete} />);
+      await api.follow({ body: { username: user.userId } });
+      toast.success(<LocalizedString id={root.followComplete} />);
     }
     setFollowing(!following);
-    setLoading(false);
   });
 
   return (

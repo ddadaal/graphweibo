@@ -1,3 +1,3 @@
-import { UserSearchResult } from "graphweibo-api/search/search";
+import { UserSearchResult } from "graphweibo-api/user/search";
 
 export type UserInfo = UserSearchResult;

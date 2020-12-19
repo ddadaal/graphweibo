@@ -7,6 +7,7 @@ export const userApiMock: MockApi<typeof userApi> = () => ({
       results: [
         {
           username: "ddadaal",
+          userId: "1",
           weiboCount: 10,
           followCount: 1,
           followerCount: 2,
@@ -15,6 +16,7 @@ export const userApiMock: MockApi<typeof userApi> = () => ({
         },
         {
           username: "cjy",
+          userId: "2",
           weiboCount: 12,
           followCount: 523,
           followerCount: 243,

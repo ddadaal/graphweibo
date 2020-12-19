@@ -1,19 +1,15 @@
 import React from "react";
 import { Box, TextArea } from "grommet";
 import { Logo } from "src/components/Logo";
+import { WeiboInput } from "src/components/WeiboInput";
 
 
 const Home: React.FC = () => {
 
   return(
-    <Box justify="center" flex="grow">
-      <Box justify="center" align="center" pad="small">
-        <Box width="medium" height="small">
-          <Logo />
-        </Box>
-        <Box width="medium">
-        </Box>
-        <Box height="small" />
+    <Box flex="grow">
+      <Box width={{ max: "large " }}>
+        <WeiboInput />
       </Box>
     </Box>
   );
