@@ -107,6 +107,13 @@ export default {
       integer: "请输入整数。",
     },
     pages: {
+      dashboard: {
+        accountProfile: {
+          username: "用户名",
+          userId: "用户ID",
+          registerTime: "注册时间",
+        },
+      },
       home: {
         title: "GraphWeibo",
         description: "推送",

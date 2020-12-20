@@ -108,6 +108,13 @@ export default {
       integer: "Please input a valid integer.",
     },
     pages: {
+      dashboard: {
+        accountProfile: {
+          username: "Username",
+          userId: "User ID",
+          registerTime: "Register Time",
+        },
+      },
       home: {
         title: "GraphWeibo",
         description: "Weibo powered by graph management service",
