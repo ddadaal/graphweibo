@@ -1,5 +1,3 @@
-import { fromApi } from "./fetch";
-import * as getAccountProfileApi from "graphweibo-api/dashboard/getAccountProfile";
 import { MockApi } from ".";
 import { dashboardApi } from "./dashboard";
 
