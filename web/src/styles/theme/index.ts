@@ -175,6 +175,7 @@ export const customTheme: ThemeType = deepFreeze(
         }),
       },
     },
+    "tab": { "border": { "color": "brand" } },
   }
 ) as any;
 
