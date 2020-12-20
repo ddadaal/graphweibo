@@ -113,6 +113,11 @@ export default {
           userId: "用户ID",
           registerTime: "注册时间",
         },
+        contentSelector: {
+          weibo: "微博",
+          following: "我关注的用户",
+          followers: "关注我的用户",
+        },
       },
       home: {
         title: "GraphWeibo",

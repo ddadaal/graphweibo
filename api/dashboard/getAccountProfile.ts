@@ -16,9 +16,9 @@ export interface GetAccountProfileSchema {
         /** 微博数 */
         weiboCount: number;
         /** 关注的人数 */
-        followCount: number;
+        followingsCount: number;
         /** 被关注的人数 */
-        followedCount: number;
+        followersCount: number;
       }
     }
   }

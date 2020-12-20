@@ -15,6 +15,8 @@ const api = getApi(userApi);
 
 interface Props {
   user: UserInfo;
+  onUserFollow?: (user: UserInfo) => void;
+  onUserUnfollow?: (user: UserInfo) => void;
 }
 
 const NumberInfo: React.FC<{ textId: string; value: number}> = (props) => {
@@ -30,7 +32,11 @@ const NumberInfo: React.FC<{ textId: string; value: number}> = (props) => {
   );
 };
 
-export const UserListItem: React.FC<Props> = ({ user }) => {
+export const UserListItem: React.FC<Props> = ({
+  user,
+  onUserFollow,
+  onUserUnfollow,
+}) => {
 
   const [loading, setLoading] = useState(false);
   const request = useHttpRequest(setLoading);
@@ -40,9 +46,11 @@ export const UserListItem: React.FC<Props> = ({ user }) => {
     if (following) {
       await api.unfollow({ body: { userId: user.userId } });
       toast.success(<LocalizedString id={root.unfollowComplete} />);
+      onUserUnfollow?.(user);
     } else {
       await api.follow({ body: { userId: user.userId } });
       toast.success(<LocalizedString id={root.followComplete} />);
+      onUserFollow?.(user);
     }
     setFollowing(!following);
   });

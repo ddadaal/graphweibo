@@ -114,6 +114,11 @@ export default {
           userId: "User ID",
           registerTime: "Register Time",
         },
+        contentSelector: {
+          weibo: "Weibo",
+          following: "Following",
+          followers: "Followers",
+        },
       },
       home: {
         title: "GraphWeibo",
