@@ -1,3 +1,3 @@
-import { GetWeiboResult } from "graphweibo-api/weibo/get";
+import { WeiboResult } from "graphweibo-api/weibo/getFollowings";
 
-export type WeiboInfo = GetWeiboResult;
+export type WeiboInfo = WeiboResult;

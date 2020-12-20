@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Avatar, Box, Button, Text } from "grommet";
+import {  Box, Button, Text } from "grommet";
 import { UserInfo } from "src/models/UserInfo";
 import { LocalizedString } from "simstate-i18n";
 import { lang } from "src/i18n";
@@ -7,6 +7,7 @@ import { getApi } from "src/apis";
 import { userApi } from "src/apis/user";
 import { useHttpRequest } from "src/utils/http";
 import { toast } from "react-toastify";
+import { DummyAvatar } from "./DummyAvatar";
 
 const root = lang.components.userListItem;
 
@@ -37,10 +38,10 @@ export const UserListItem: React.FC<Props> = ({ user }) => {
 
   const onClick = () => request(async () => {
     if (following) {
-      await api.unfollow({ body: { username: user.userId } });
+      await api.unfollow({ body: { userId: user.userId } });
       toast.success(<LocalizedString id={root.unfollowComplete} />);
     } else {
-      await api.follow({ body: { username: user.userId } });
+      await api.follow({ body: { userId: user.userId } });
       toast.success(<LocalizedString id={root.followComplete} />);
     }
     setFollowing(!following);
@@ -49,7 +50,7 @@ export const UserListItem: React.FC<Props> = ({ user }) => {
   return (
     <Box direction="row" gap="small" justify="between" align="center">
       <Box direction="row" gap="small">
-        <Avatar src="//s.gravatar.com/avatar/b7fb138d53ba0f573212ccce38a7c43b?s=80" />
+        <DummyAvatar />
         <Box direction="column">
           <Text>
             {user.username}

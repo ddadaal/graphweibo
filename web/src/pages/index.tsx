@@ -4,16 +4,16 @@ import { WeiboInput } from "src/components/WeiboInput";
 import { NextPage } from "next";
 import { getApi } from "src/apis";
 import { weiboApi } from "src/apis/weibo";
-import { GetWeiboResult } from "graphweibo-api/weibo/get";
 import { SSRPageProps } from "src/utils/ssr";
 import { HttpError } from "src/apis/fetch";
 import { UnifiedErrorPage } from "src/components/errors/UnifiedErrorPage";
 import { WeiboListItem } from "src/components/WeiboListItem";
+import { WeiboResult } from "graphweibo-api/weibo/getFollowings";
 
 const api = getApi(weiboApi);
 
 type Props = SSRPageProps<{
-  results: GetWeiboResult[];
+  results: WeiboResult[];
 }>;
 
 
@@ -42,7 +42,7 @@ const Home: NextPage<Props> = (props) => {
 };
 
 Home.getInitialProps = async () => {
-  const data = await api.get({})
+  const data = await api.getFollowings({})
     .catch((r: HttpError) => ({ error: r }));
 
   return data;

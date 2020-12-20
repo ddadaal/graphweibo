@@ -3,7 +3,7 @@ export const endpoint = {
   url: "/user/search",
 } as const;
 
-export interface UserSearchResult {
+export interface UserResult {
   /** 用户名 */
   username: string;
   /** 用户ID */
@@ -51,7 +51,7 @@ export interface SearchUserSchema {
       /**
        * 查询结果
        */
-      results: UserSearchResult[];
+      results: UserResult[];
     }
   }
 }

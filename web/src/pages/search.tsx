@@ -13,13 +13,13 @@ import { SSRPageProps } from "src/utils/ssr";
 import { UnifiedErrorPage } from "src/components/errors/UnifiedErrorPage";
 import { useHttpErrorHandler } from "src/utils/http";
 import { UserListItem } from "src/components/UserListItem";
-import { UserSearchResult } from "graphweibo-api/user/search";
 import { userApi } from "src/apis/user";
+import { UserResult } from "graphweibo-api/user/search";
 
 const api = getApi(userApi);
 
 type Props = SSRPageProps<{
-  results: UserSearchResult[];
+  results: UserResult[];
 }>;
 
 const search = ([query]: any[]) => api.search({ query });

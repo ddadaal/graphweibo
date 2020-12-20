@@ -1,9 +1,9 @@
 export const endpoint = {
   method: "GET",
-  url: "/weibo",
+  url: "/weibo/followings",
 } as const;
 
-export interface GetWeiboResult {
+export interface WeiboResult {
 
   /** 这个微博的ID */
   weiboId: string;
@@ -27,10 +27,10 @@ export interface GetWeiboResult {
  * 把所有数据直接返回吧，简单一点
  * 要改以后再改
  */
-export interface GetWeiboSchema {
+export interface WeiboGetFollowingsSchema {
   responses: {
     200: {
-      results: GetWeiboResult[];
+      results: WeiboResult[];
     }
   }
 }
