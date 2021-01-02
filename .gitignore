@@ -32,3 +32,6 @@ yarn-error.log*
 # database file
 *.db
 db/
+
+# gstore
+gstore
