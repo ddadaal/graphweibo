@@ -1,6 +1,5 @@
 import jwt
 from datetime import datetime, timedelta
-from app.users import User
 
 screct_key = "secret"
 
@@ -47,21 +46,12 @@ def identify(request):
     if (auth_header):
         auth_tokenArr = auth_header.split(" ")
         if (not auth_tokenArr or auth_tokenArr[0] != 'JWT' or len(auth_tokenArr) != 2):
-            result = { 'state' : False, 'msg' : '请传递正确的验证头信息' }
+            result = {'state': False, 'msg': '请传递正确的验证头信息' }
         else:
             auth_token = auth_tokenArr[1]
             payload = decodeToken(auth_token)
-            if not isinstance(payload, str):
-                user = User.get(User, payload['user_id'])
-                if (user is None):
-                    result = { 'state' : False, 'msg' : '找不到用户信息'}
-                else:
-                    if (user.login_time == payload['data']['login_time']):
-                        result = { 'state' : False, 'data' : usr.id, 'msg' : '请求成功'}
-                    else:
-                        result = { 'state' : False, 'msg' : 'Token已更改，请重新登录获取'}
-            else:
-                result = { 'state' : False, 'data': payload}
+            userID = payload['user_id']
+            result = {'state': True, 'msg': userID}
     else:
-        result = result = { 'state' : False , 'msg' : '没有提供认证token' }
+        result = {'state': False , 'msg': '没有提供认证token' }
     return result

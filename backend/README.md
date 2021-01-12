@@ -1,7 +1,4 @@
 # Backend
-
-Only runs under Linux.
-
 ``` bash
 pip install virtualenv
 
