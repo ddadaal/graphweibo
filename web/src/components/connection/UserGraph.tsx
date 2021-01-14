@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { range } from "src/utils/array";
-import Graph from "vis-react";
+import { DataSet } from "vis-data";
+import { VisGraph } from "./VisGraph";
 
 const colors = {
   "intermediate": "#75c2f8",
@@ -24,6 +25,8 @@ interface Props {
 export const UserGraph: React.FC<Props> = (props) => {
   const { fromUser, toUser, intermediateUsers, paths } = props;
 
+  // redraw graph when body resized
+
   const data = useMemo(() => {
     const edges = [] as Record<string, string>[];
 
@@ -43,12 +46,12 @@ export const UserGraph: React.FC<Props> = (props) => {
         ({ id, label: username, color: colors.intermediate })),
     ];
 
-    return { edges, nodes };
+    return { edges: new DataSet(edges), nodes: new DataSet(nodes) };
   }, [fromUser, toUser, intermediateUsers, paths]);
 
   return (
-    <Graph
-      graph={data}
+    <VisGraph
+      data={data}
       style={{ height: "500px" }}
     />
   );
