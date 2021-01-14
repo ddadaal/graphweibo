@@ -24,12 +24,12 @@
     "react-async": "^10.0.1",
     "react-dom": "17.0.1",
     "react-helmet": "^6.1.0",
-    "react-sigma-graph": "0.0.14",
     "react-toastify": "^6.2.0",
     "simstate": "^3.0.0",
     "simstate-i18n": "^2.1.0",
     "styled-components": "^5.2.1",
-    "url-join": "^4.0.1"
+    "url-join": "^4.0.1",
+    "vis-react": "^0.5.1"
   },
   "devDependencies": {
     "@types/luxon": "^1.25.0",
