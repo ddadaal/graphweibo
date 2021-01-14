@@ -49,12 +49,12 @@ export const VisGraph: React.FC<Props> = ({
 
   useEffect(() => {
     for (const eventName of Object.keys(events)) {
-      network.current!.on(eventName, events[eventName]);
+      network.current!.on(eventName as NetworkEvents, events[eventName]);
     }
 
     return () => {
       for (const eventName of Object.keys(events)) {
-        network.current!.off(eventName, events[eventName]);
+        network.current!.off(eventName as NetworkEvents, events[eventName]);
       }
     };
   }, [events]);
