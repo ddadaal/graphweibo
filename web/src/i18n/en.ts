@@ -72,6 +72,7 @@ export default {
     header: {
       home: "Home",
       search: "SearchUser",
+      connection: "UserConnection",
       upload: "Upload",
       about: "About",
       login: "Login",
