@@ -1,5 +1,6 @@
 #coding:utf-8 
 #user 
+from data.utils import getProfile
 from flask import Blueprint #, render_template, redirect 
 from flask import request, json, jsonify, Response
 # from app import app
