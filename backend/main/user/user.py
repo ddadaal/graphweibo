@@ -1,5 +1,6 @@
 #coding:utf-8 
 #user 
+from data.utils import follow, login, register, unfollow
 from flask import Blueprint #, render_template, redirect 
 from flask import request, json, jsonify, Response
 from main.auths import *
@@ -9,7 +10,7 @@ user = Blueprint('user',__name__)
 
 # 用户注册
 @user.route('', methods=['POST'])
-def register():
+def register_api():
     data = json.loads(request.get_data())
     username = data['username']
     password = data['password']
@@ -27,7 +28,7 @@ def register():
 
 # 用户登录
 @user.route('/token', methods=['GET'])
-def login():
+def login_api():
     data = json.loads(request.get_data())
     username = data['username']
     password = data['password']
@@ -41,8 +42,6 @@ def login():
         return Response(json.dumps({'usrID': result['userID'], 'token': str(token)}), status=200, content_type='application/json')
     else:
         return Response(status=401)
-
-
 
 # 关注/取关用户
 @user.route('/follow', methods=['POST','DELETE'])
