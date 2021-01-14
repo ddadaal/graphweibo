@@ -24,6 +24,7 @@
     "react-async": "^10.0.1",
     "react-dom": "17.0.1",
     "react-helmet": "^6.1.0",
+    "react-sigma-graph": "0.0.14",
     "react-toastify": "^6.2.0",
     "simstate": "^3.0.0",
     "simstate-i18n": "^2.1.0",

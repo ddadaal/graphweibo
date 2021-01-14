@@ -125,7 +125,642 @@
       ],
       "additionalProperties": false,
       "description": "注册"
+    },
+    "GetAccountProfileSchema": {
+      "type": "object",
+      "properties": {
+        "responses": {
+          "type": "object",
+          "properties": {
+            "200": {
+              "type": "object",
+              "properties": {
+                "profile": {
+                  "type": "object",
+                  "properties": {
+                    "userId": {
+                      "type": "string",
+                      "description": "用户ID"
+                    },
+                    "username": {
+                      "type": "string",
+                      "description": "用户名"
+                    },
+                    "registerTime": {
+                      "type": "string",
+                      "description": "注册时间。应该是一个ISO 8601字符串"
+                    },
+                    "weiboCount": {
+                      "type": "number",
+                      "description": "微博数"
+                    },
+                    "followingsCount": {
+                      "type": "number",
+                      "description": "关注的人数"
+                    },
+                    "followersCount": {
+                      "type": "number",
+                      "description": "被关注的人数"
+                    }
+                  },
+                  "required": [
+                    "userId",
+                    "username",
+                    "registerTime",
+                    "weiboCount",
+                    "followingsCount",
+                    "followersCount"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "profile"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "200"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "responses"
+      ],
+      "additionalProperties": false
+    },
+    "UserConnectionSchema": {
+      "type": "object",
+      "properties": {
+        "querystring": {
+          "type": "object",
+          "properties": {
+            "fromUserId": {
+              "type": "string"
+            },
+            "toUserId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "fromUserId",
+            "toUserId"
+          ],
+          "additionalProperties": false
+        },
+        "responses": {
+          "type": "object",
+          "properties": {
+            "200": {
+              "type": "object",
+              "properties": {
+                "fromUser": {
+                  "$ref": "#/definitions/UserConnectionUser",
+                  "description": "源用户的ID和用户名"
+                },
+                "toUser": {
+                  "$ref": "#/definitions/UserConnectionUser",
+                  "description": "目标用户的ID和用户名"
+                },
+                "immediateUsers": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/UserConnectionUser"
+                  },
+                  "description": "中间用户的ID和用户名，不包含源用户和目标用户"
+                },
+                "paths": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "所有源用户和目标用户之间的路径。\r 每个节点用ID表示，每个小数组为一条路径。\r 路径中需要包含源节点和目标节点"
+                }
+              },
+              "required": [
+                "fromUser",
+                "toUser",
+                "immediateUsers",
+                "paths"
+              ],
+              "additionalProperties": false,
+              "description": "关系"
+            },
+            "404": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "type": "string",
+                  "enum": [
+                    "from",
+                    "to"
+                  ],
+                  "description": "不存在的用户。"
+                }
+              },
+              "required": [
+                "user"
+              ],
+              "additionalProperties": false,
+              "description": "某个用户不存在"
+            }
+          },
+          "required": [
+            "200",
+            "404"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "querystring",
+        "responses"
+      ],
+      "additionalProperties": false,
+      "description": "查询两个用户之间的四条边之内的关注关系"
+    },
+    "FollowUserSchema": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "properties": {
+            "userId": {
+              "type": "string",
+              "description": "要关注的用户的用户ID"
+            }
+          },
+          "required": [
+            "userId"
+          ],
+          "additionalProperties": false
+        },
+        "responses": {
+          "type": "object",
+          "properties": {
+            "200": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "关注成功"
+            },
+            "404": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "不存在这个用户"
+            },
+            "405": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "本来就已经关注这个用户"
+            }
+          },
+          "required": [
+            "200",
+            "404",
+            "405"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "body",
+        "responses"
+      ],
+      "additionalProperties": false,
+      "description": "关注一个用户"
+    },
+    "SearchUserSchema": {
+      "type": "object",
+      "properties": {
+        "querystring": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "查询字符串"
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "additionalProperties": false
+        },
+        "responses": {
+          "type": "object",
+          "properties": {
+            "200": {
+              "type": "object",
+              "properties": {
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/UserResult"
+                  },
+                  "description": "查询结果"
+                }
+              },
+              "required": [
+                "results"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "200"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "querystring",
+        "responses"
+      ],
+      "additionalProperties": false,
+      "description": "根据查询字符串搜索用户"
+    },
+    "GetFollowersSchema": {
+      "type": "object",
+      "properties": {
+        "querystring": {
+          "type": "object",
+          "properties": {
+            "userId": {
+              "type": "string",
+              "description": "要查询的用户ID"
+            }
+          },
+          "required": [
+            "userId"
+          ],
+          "additionalProperties": false
+        },
+        "responses": {
+          "type": "object",
+          "properties": {
+            "200": {
+              "type": "object",
+              "properties": {
+                "followers": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/UserResult"
+                  },
+                  "description": "关注此用户的用户"
+                }
+              },
+              "required": [
+                "followers"
+              ],
+              "additionalProperties": false
+            },
+            "404": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "用户不存在。"
+            }
+          },
+          "required": [
+            "200",
+            "404"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "querystring",
+        "responses"
+      ],
+      "additionalProperties": false,
+      "description": "查询关注一个用户的用户"
+    },
+    "GetFollowingUsersSchema": {
+      "type": "object",
+      "properties": {
+        "querystring": {
+          "type": "object",
+          "properties": {
+            "userId": {
+              "type": "string",
+              "description": "要查询的用户ID"
+            }
+          },
+          "required": [
+            "userId"
+          ],
+          "additionalProperties": false
+        },
+        "responses": {
+          "type": "object",
+          "properties": {
+            "200": {
+              "type": "object",
+              "properties": {
+                "followings": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/UserResult"
+                  },
+                  "description": "此用户关注的用户"
+                }
+              },
+              "required": [
+                "followings"
+              ],
+              "additionalProperties": false
+            },
+            "404": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "用户不存在。"
+            }
+          },
+          "required": [
+            "200",
+            "404"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "querystring",
+        "responses"
+      ],
+      "additionalProperties": false,
+      "description": "查询一个用户关注的用户"
+    },
+    "UnfollowUserSchema": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "properties": {
+            "userId": {
+              "type": "string",
+              "description": "要取消关注的用户的用户ID"
+            }
+          },
+          "required": [
+            "userId"
+          ],
+          "additionalProperties": false
+        },
+        "responses": {
+          "type": "object",
+          "properties": {
+            "200": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "取消关注成功"
+            },
+            "404": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "不存在这个用户"
+            },
+            "405": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "本来就没有关注这个用户"
+            }
+          },
+          "required": [
+            "200",
+            "404",
+            "405"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "body",
+        "responses"
+      ],
+      "additionalProperties": false,
+      "description": "取消关注一个用户。"
+    },
+    "WeiboGetFollowingsSchema": {
+      "type": "object",
+      "properties": {
+        "responses": {
+          "type": "object",
+          "properties": {
+            "200": {
+              "type": "object",
+              "properties": {
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/WeiboResult"
+                  }
+                }
+              },
+              "required": [
+                "results"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "200"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "responses"
+      ],
+      "additionalProperties": false,
+      "description": "返回自己已经关注的人的微博。\r 应该按时间倒序排列\r 把所有数据直接返回吧，简单一点\r 要改以后再改"
+    },
+    "WeiboGetByUserSchema": {
+      "type": "object",
+      "properties": {
+        "querystring": {
+          "type": "object",
+          "properties": {
+            "userId": {
+              "type": "string",
+              "description": "用户ID"
+            }
+          },
+          "required": [
+            "userId"
+          ],
+          "additionalProperties": false
+        },
+        "responses": {
+          "type": "object",
+          "properties": {
+            "200": {
+              "type": "object",
+              "properties": {
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/WeiboResult"
+                  }
+                }
+              },
+              "required": [
+                "results"
+              ],
+              "additionalProperties": false
+            },
+            "404": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "用户不存在。"
+            }
+          },
+          "required": [
+            "200",
+            "404"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "querystring",
+        "responses"
+      ],
+      "additionalProperties": false,
+      "description": "返回查询ID"
+    },
+    "SendWeiboSchema": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "string",
+              "description": "微博内容"
+            }
+          },
+          "required": [
+            "content"
+          ],
+          "additionalProperties": false
+        },
+        "responses": {
+          "type": "object",
+          "properties": {
+            "201": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "发送成功"
+            }
+          },
+          "required": [
+            "201"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "body",
+        "responses"
+      ],
+      "additionalProperties": false
     }
   },
-  "models": {}
+  "models": {
+    "UserConnectionUser": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "userId",
+        "username"
+      ],
+      "additionalProperties": false
+    },
+    "UserResult": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": "用户名"
+        },
+        "userId": {
+          "type": "string",
+          "description": "用户ID"
+        },
+        "weiboCount": {
+          "type": "number",
+          "description": "微博数量。应该是个int"
+        },
+        "followCount": {
+          "type": "number",
+          "description": "关注的人数"
+        },
+        "followerCount": {
+          "type": "number",
+          "description": "被关注的人数"
+        },
+        "following": {
+          "type": "boolean",
+          "description": "我关注了这个用户了吗？\r 如果当前用户自己，设置为true。\r 如果搜索时用户没有登录，设置为false"
+        },
+        "followed": {
+          "type": "boolean",
+          "description": "这个用户关注我了吗？\r 如果当前用户自己，设置为true。\r 如果搜索时用户没有登录，设置为false"
+        }
+      },
+      "required": [
+        "username",
+        "userId",
+        "weiboCount",
+        "followCount",
+        "followerCount",
+        "following",
+        "followed"
+      ],
+      "additionalProperties": false
+    },
+    "WeiboResult": {
+      "type": "object",
+      "properties": {
+        "weiboId": {
+          "type": "string",
+          "description": "这个微博的ID"
+        },
+        "senderId": {
+          "type": "string",
+          "description": "发送的用户ID"
+        },
+        "senderUsername": {
+          "type": "string",
+          "description": "发送的用户的用户名"
+        },
+        "sendTime": {
+          "type": "string",
+          "description": "发送时间，应该是一个满足ISO8601的时间字符串，至少精确到秒"
+        },
+        "content": {
+          "type": "string",
+          "description": "内容"
+        }
+      },
+      "required": [
+        "weiboId",
+        "senderId",
+        "senderUsername",
+        "sendTime",
+        "content"
+      ],
+      "additionalProperties": false
+    }
+  }
 }

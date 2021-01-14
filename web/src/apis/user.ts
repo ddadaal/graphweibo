@@ -4,6 +4,7 @@ import * as followApi from "graphweibo-api/user/follow";
 import * as unfollowApi from "graphweibo-api/user/unfollow";
 import * as getFollowersApi from "graphweibo-api/user/getFollowers";
 import * as getFollowingsApi from "graphweibo-api/user/getFollowings";
+import * as connectionApi from "graphweibo-api/user/connection";
 
 export const userApi = () => ({
   search: fromApi<searchApi.SearchUserSchema>(searchApi.endpoint),
@@ -12,4 +13,6 @@ export const userApi = () => ({
   getFollowers: fromApi<getFollowersApi.GetFollowersSchema>(getFollowersApi.endpoint),
   getFollowings:
     fromApi<getFollowingsApi.GetFollowingUsersSchema>(getFollowingsApi.endpoint),
+  getUserConnection:
+    fromApi<connectionApi.UserConnectionSchema>(connectionApi.endpoint),
 });
