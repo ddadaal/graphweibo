@@ -1,6 +1,6 @@
 #coding:utf-8 
 #user 
-from data.utils import follow, login, register, unfollow
+from data.utils import follow, getFollowers, login, register, unfollow
 from flask import Blueprint #, render_template, redirect 
 from flask import request, json, jsonify, Response
 from main.auths import *

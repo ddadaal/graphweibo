@@ -1,5 +1,6 @@
 #coding:utf-8 
 #user 
+from data.utils import getFollowingsWeibo, getUserWeibo, postWeibo
 from flask import Blueprint #, render_template, redirect 
 from flask import request, json, jsonify, Response
 # from app import app
@@ -55,7 +56,7 @@ def getAllFollowingsWeibo():
         return Response(status=401)
     # TODO
     # 找所有已关注人的微博
-    result = getFollwingsWeibo(userID)
+    result = getFollowingsWeibo(userID)
 
     if result['state']:
         return Response(json.dumps({'results': result['results']}), status=200, content_type='application/json')

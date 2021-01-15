@@ -1,11 +1,11 @@
-import GstoreConnector
+import data.GstoreConnector as GstoreConnector
 import sys
 import random
 import json
 import datetime
 
 
-IP = "127.0.0.1"
+IP = "162.105.132.76"
 Port = 9000
 username = "root"
 password = "123456"
@@ -16,7 +16,7 @@ prefix = "prefix vocab:   <file:///home/fxb/d2rq/vocab/> \
 
 gc = GstoreConnector.GstoreConnector(IP, Port, username, password)
 
-res = gc.load("weibo", "POST")
+# res = gc.load("weibo", "POST")
 
 def register(uname, pwd):
     uid = ''.join(str(random.choice(range(10))) for _ in range(10))
@@ -273,12 +273,13 @@ def getUserWeibo(uid):
 
     return ans
 
-# getProfile("2452144190")
-# follow('1000080335','1940992571')
-getFollowers("1000080335")
-# getFollowings('1000080335')
-# postWeibo("2452144190","this is a test")
-# getUserWeibo('2452144190')
-# searchUser("Mini", "2452144190")
-# register("q3erf", "145115")
-# login("q3erf", "145115")
+# if __name__ == "__main__":
+#     # getProfile("2452144190")
+#     # follow('1000080335','1940992571')
+#     getFollowers("1000080335")
+#     # getFollowings('1000080335')
+#     # postWeibo("2452144190","this is a test")
+#     # getUserWeibo('2452144190')
+#     # searchUser("Mini", "2452144190")
+#     # register("q3erf", "145115")
+#     # login("q3erf", "145115")
