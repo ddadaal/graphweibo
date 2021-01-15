@@ -71,6 +71,7 @@ export default {
     header: {
       home: "主页",
       search: "搜索用户",
+      connection: "用户关系",
       login: "登录",
       about: "关于",
       welcome: "欢迎您，{}",

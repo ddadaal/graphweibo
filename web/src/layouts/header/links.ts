@@ -13,6 +13,7 @@ const root = lang.header;
 export const commonLinks = [
   { href: "/", textId: root.home, mode: "exact" },
   { href: "/search", textId: root.search, mode: "startsWith" },
+  { href: "/connection", textId: root.connection, mode: "startsWith" },
   // { href: "/about", textId: root.about, mode: "startsWith" },
 ] as TLink[];
 

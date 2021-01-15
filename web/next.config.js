@@ -7,6 +7,8 @@ const images = require("next-images");
 module.exports = withPlugins([
   withTranspileModules([
     "graphweibo-api",
+    "vis-network",
+    "vis-data",
   ])(),
   [images, {}],
 ], {
