@@ -12,6 +12,7 @@ import { useStore } from "simstate";
 import { UserStore } from "src/stores/UserStore";
 import Router from "next/router";
 import { AnchorLink } from "./AnchorLink";
+import { Local } from "grommet-icons";
 
 const root = lang.components.userListItem;
 
@@ -110,29 +111,38 @@ export const UserListItem: React.FC<Props> = ({
         {
           userStore.user
             ?  (
-              <Box width="128px">
-                <Button size="medium" fill secondary label={(
-                  <LocalizedString id={root.queryConnection} />
-                )} onClick={() => Router.push({
-                  pathname: "/connection",
-                  query: { from: userStore.user!.userId , to: user.userId },
-                })} disabled={loading}
-                >
-                </Button>
+              <Box gap="small" direction="row">
+                <Box width="128px">
+                  <Button size="medium" fill secondary label={(
+                    <LocalizedString id={root.queryConnection} />
+                  )} onClick={() => Router.push({
+                    pathname: "/connection",
+                    query: { from: userStore.user!.userId , to: user.userId },
+                  })} disabled={loading}
+                  >
+                  </Button>
+                </Box>
+                <Box width="108px">
+                  <Button size="medium" fill label={(
+                    <LocalizedString id={
+                      loading
+                        ? user.following ? root.unfollowInProgress : root.followInProgress
+                        : following ? root.following : root.follow}
+                    />
+                  )} onClick={onClick} disabled={loading}
+                  >
+                  </Button>
+                </Box>
               </Box>
             ) : undefined
+            // ) : (
+            //   <Box alignSelf="center">
+            //     <AnchorLink href="/login">
+            //       <LocalizedString id={root.loginToFollow}/>
+            //     </AnchorLink>
+            //   </Box>
+            // )
         }
-        <Box width="108px">
-          <Button size="medium" fill label={(
-            <LocalizedString id={
-              loading
-                ? user.following ? root.unfollowInProgress : root.followInProgress
-                : following ? root.following : root.follow}
-            />
-          )} onClick={onClick} disabled={loading}
-          >
-          </Button>
-        </Box>
       </Box>
     </Box>
   );
