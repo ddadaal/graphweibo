@@ -1,6 +1,6 @@
 import React from "react";
 import { useStore } from "simstate";
-import { getUserInfoInStorage, UserStore } from "src/stores/UserStore";
+import { UserStore } from "src/stores/UserStore";
 import { Nav, Menu, Box, BoxProps } from "grommet";
 import { LocalizedString } from "simstate-i18n";
 import { lang } from "src/i18n";

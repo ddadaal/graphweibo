@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useStore } from "simstate";
 import { ThemeStore } from "src/stores/ThemeStore";
 import { range } from "src/utils/array";

@@ -119,6 +119,10 @@ export default {
         inputUser: "Please search and select user in the textboxes above.",
       },
       profile: {
+        error: {
+          noUserId: { title: "User Not Specified", description: "Please specify userId." },
+          userNotFound: { title: "User Not Exist", description: "Specified user doesn't exist." },
+        },
         accountProfile: {
           username: "Username",
           userId: "User ID",

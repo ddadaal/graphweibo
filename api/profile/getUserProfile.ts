@@ -23,6 +23,10 @@ export interface GetUserProfileSchema {
         /** 被关注的人数 */
         followersCount: number;
       }
-    }
+    };
+    /** 没有输入userId */
+    400: {}
+    /** 没有找到这个用户 */
+    404: {}
   }
 }

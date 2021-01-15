@@ -19,7 +19,7 @@ return: {
 ```
 
 ## def getProfile(uid string)
-获取我的个人中心信息
+获取我的个人中心信息。如果uid不存在，state给False。
 ```python
 return: {
         state:True/False

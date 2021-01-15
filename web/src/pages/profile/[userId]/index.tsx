@@ -6,6 +6,10 @@ import { getApi } from "src/apis";
 import { HttpError } from "src/apis/fetch";
 import { profileApi } from "src/apis/profile";
 import { weiboApi } from "src/apis/weibo";
+import {
+  NoUserIdErrorPage,
+  UserNotExistErrorPage,
+} from "src/components/dashboard/errorPages";
 import { UnifiedErrorPage } from "src/components/errors/UnifiedErrorPage";
 import { WeiboListItem } from "src/components/WeiboListItem";
 import { DashboardLayout } from "src/layouts/DashboardLayout";
@@ -24,6 +28,11 @@ const wapi = getApi(weiboApi);
 const DashboardPage: NextPage<Props> = (props) => {
 
   if ("error" in props) {
+    if (props.error.status === 400) {
+      return <NoUserIdErrorPage />;
+    } else if (props.error.status === 404) {
+      return <UserNotExistErrorPage />;
+    }
     return <UnifiedErrorPage error={props.error} />;
   }
 

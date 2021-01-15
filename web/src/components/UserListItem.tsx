@@ -12,7 +12,6 @@ import { useStore } from "simstate";
 import { UserStore } from "src/stores/UserStore";
 import Router from "next/router";
 import { AnchorLink } from "./AnchorLink";
-import { Local } from "grommet-icons";
 
 const root = lang.components.userListItem;
 

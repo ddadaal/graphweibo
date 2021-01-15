@@ -118,6 +118,10 @@ export default {
         inputUser: "请在上面文本框内搜索并选择用户",
       },
       profile: {
+        error: {
+          noUserId: { title: "未指定用户", description: "请通过Path指定用户ID。" },
+          userNotFound: { title: "用户不存在", description: "指定的用户不存在" },
+        },
         accountProfile: {
           username: "用户名",
           userId: "用户ID",

@@ -15,6 +15,9 @@ profile = Blueprint('profile',__name__)
 def getAccountProfile():
     data = request.args
 
+    if (not 'userId' in data.keys()) or (not data['userId']):
+        return Response(status=400)
+    
     # TODO
     # 通过用户ID获取用户的所有信息，返回用户数据
     result = getProfile(data['userId'])
@@ -23,4 +26,4 @@ def getAccountProfile():
         result.pop('state')
         return Response(json.dumps(result), status=200, content_type='application/json')
     else:
-        return Response(status=405)
+        return Response(status=404)

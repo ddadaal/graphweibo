@@ -10,9 +10,12 @@ import { UnifiedErrorPage } from "src/components/errors/UnifiedErrorPage";
 import { UserListItem } from "src/components/UserListItem";
 import { DashboardLayout } from "src/layouts/DashboardLayout";
 import { AccountProfile } from "src/models/AccountProfile";
-import { requireAuth } from "src/utils/requireAuth";
 import { SSRPageProps } from "src/utils/ssr";
 import { queryToString } from "src/utils/querystring";
+import {
+  NoUserIdErrorPage,
+  UserNotExistErrorPage,
+} from "src/components/dashboard/errorPages";
 
 type Props = SSRPageProps<{
   profile: AccountProfile;
@@ -25,6 +28,11 @@ const uapi = getApi(userApi);
 const DashboardFollowingsPage: NextPage<Props> = (props) => {
 
   if ("error" in props) {
+    if (props.error.status === 400) {
+      return <NoUserIdErrorPage />;
+    } else if (props.error.status === 404) {
+      return <UserNotExistErrorPage />;
+    }
     return <UnifiedErrorPage error={props.error} />;
   }
 
