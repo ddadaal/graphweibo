@@ -59,7 +59,7 @@ const RegisterForm: React.FC = () => {
         label={<LocalizedString id={root.username} />}
         name="username"
         required={true}
-        disabled={inProgress} validate={emailValidation}
+        disabled={inProgress}
       >
         <TextInput name="username"/>
       </FormField>

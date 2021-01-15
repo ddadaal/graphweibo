@@ -1,9 +1,10 @@
 ## def register(uname string, pwd string, time string)
 注册：创建新用户，找到一个现有数据中没有的ID号并返回，以后基本上以ID作为查询的主要标识
+如果uname已经存在，state返回False
 ```python
 return: {//不用直接返回json，返回字典即可
         state:True/False
-        userID(string)
+        userId(string)
         }
 
 ```
@@ -13,7 +14,7 @@ return: {//不用直接返回json，返回字典即可
 ```python
 return: {
         state:True/False
-        userID(string)
+        userId(string)
         }
 
 ```

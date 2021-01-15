@@ -12,16 +12,18 @@ user = Blueprint('user',__name__)
 @user.route('', methods=['POST'])
 def register_api():
     data = json.loads(request.get_data())
+
     username = data['username']
     password = data['password']
 
     # TODO 
     # 注册函数：完成用户注册，返回用户ID
-    result = register(username,hash(password),str(datetime.utcnow().isoformat()))
+    result = register(username,hash(password),datetime.utcnow().isoformat())
+    print(result)
 
     if(result['state']): 
-        token = encodeToken(result['userID'])
-        return Response(json.dumps({'usrID': result['userID'], 'token': str(token)}), status=201, content_type='application/json')
+        token = encodeToken(result['userId'])
+        return Response(json.dumps({'userId': result['userId'], 'token': str(token)}), status=201, content_type='application/json')
         # return jsonify({'usrID': userID, 'token': str(token)})
     else:
         return Response(status=405)
@@ -39,8 +41,8 @@ def login_api():
     result = login(username,hash(password))
     
     if(result['state']): 
-        token = encodeToken(result['userID'])
-        return Response(json.dumps({'usrID': result['userID'], 'token': str(token)}), status=200, content_type='application/json')
+        token = encodeToken(result['userId'])
+        return Response(json.dumps({'userId': result['userId'], 'token': str(token)}), status=200, content_type='application/json')
     else:
         return Response(status=401)
 
@@ -50,7 +52,7 @@ def change_follow_api():
     # 获取对象
     data = json.loads(request.get_data())
 
-    targetID = data['userID']
+    targetID = data['userId']
     # 获取当前用户？
     identity = identify(request)
     if identity['state']:
@@ -88,7 +90,8 @@ def get_followers_api():
     # data = json.loads(request.get_data())
     data = request.args
 
-    userID = data['userID']
+    # NOTE 注意大小写，之前是userID
+    userID = data['userId']
 
     # TODO
     # 获取当前用户所有粉丝
@@ -104,7 +107,7 @@ def get_followers_api():
 @user.route('/followings', methods=['GET'])
 def getFollowings():
     data = json.loads(request.get_data())
-    userID = data['userID']
+    userID = data['userId']
 
     # TODO
     # 获取当前用户所有关注者
@@ -130,8 +133,8 @@ def search_api():
     # data = json.loads(request.get_data())
     data = request.args
 
-    if 'userID' in data.keys():
-        queryID = data['userID']
+    if 'userId' in data.keys():
+        queryID = data['userId']
         result = searchUserByID(queryID,userID)
     else:
         querystr = data['query']

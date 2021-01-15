@@ -17,9 +17,10 @@ gc = GstoreConnector.GstoreConnector(IP, Port, username, password)
 
 # res = gc.load("weibo", "POST")
 
-def register(uname, pwd):
+def register(uname, pwd, register_time):
+
+    # NOTE 判断uname是否存在
     uid = ''.join(str(random.choice(range(10))) for _ in range(10))
-    isotime = datetime.datetime.now().replace(microsecond=0).isoformat()
     ans ={}
     sparql = prefix+" insert DATA{\
             user:%s vocab:user_pwd %s.\
@@ -27,7 +28,7 @@ def register(uname, pwd):
             user:%s vocab:user_statusesnum 0.\
             user:%s vocab:user_followersnum 0.\
             user:%s vocab:user_friendsnum 0.\
-            }"%(uid, pwd, uid, isotime, uid, uid, uid)
+            }"%(uid, pwd, uid, register_time, uid, uid, uid)
     resp = gc.query("weibo", "json", sparql)
     resp = gc.checkpoint("weibo")
     ans["state"] = True

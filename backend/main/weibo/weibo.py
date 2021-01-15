@@ -36,7 +36,7 @@ def getWeibo():
         # 获取查询ID
         # data = json.loads(request.get_data())
         data = request.args
-        querystr = data['userID']
+        querystr = data['userId']
         # TODO
         # 获取该用户的所有微博
         result = getUserWeibo(querystr)
