@@ -158,8 +158,8 @@ return:{
         }
 ```
 
-## def getUserConnection(fromuid:string,fromuid:string)
-获取某个特定用户的微博
+## def getUserConnection(fromuid:string,touid:string)
+获得两个用户之间的关注关系。从from关注到to，4跳之内。
 ```python
 return:{
         state:true
