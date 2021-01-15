@@ -14,7 +14,6 @@ import { useHttpErrorHandler } from "src/utils/http";
 import { useAsync } from "react-async";
 import { useFirstMount } from "src/utils/useFirstMount";
 import { OverlayLoading } from "src/components/loading/OverlayLoading";
-import { ThemeStore } from "src/stores/ThemeStore";
 import { UserSelectTextBox } from "src/components/UserSelectTextBox";
 import { LocalizedString } from "simstate-i18n";
 import { lang } from "src/i18n";
@@ -58,9 +57,9 @@ export const ConnectionPage: NextPage<Props> = (props) => {
 
   useEffect(() => {
     if (!firstMount) {
-      run(query);
+      run(query.from, query.to);
     }
-  }, [query]);
+  }, [query.from, query.to]);
 
   const [fromUser, setFromUser] = useState<UserResult | null>(null);
   const [toUser, setToUser] = useState<UserResult | null>(null);
@@ -96,11 +95,21 @@ export const ConnectionPage: NextPage<Props> = (props) => {
           </Button>
         </Box>
       </Box>
-      <Box>
-
+      <Box margin="small">
         { isServer() ? undefined
-          : data ? <UserGraph {...data} />
-            : <OverlayLoading loading={true} />
+          : (
+            <OverlayLoading loading={isPending}>
+              { data ? <UserGraph {...data} /> :
+                (!fromUser || !toUser) ? (
+                  <Box alignSelf="center">
+                    <Paragraph>
+                      <LocalizedString id={root.inputUser} />
+                    </Paragraph>
+                  </Box>
+                )
+                  : undefined}
+            </OverlayLoading>
+          )
         }
       </Box>
     </Box>

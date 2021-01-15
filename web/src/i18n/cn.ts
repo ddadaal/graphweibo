@@ -113,6 +113,7 @@ export default {
         fromUser: "从用户",
         toUser: "到用户",
         query: "查询关注关系",
+        inputUser: "请在上面文本框内搜索并选择用户",
       },
       dashboard: {
         accountProfile: {

@@ -114,6 +114,7 @@ export default {
         fromUser: "from User",
         toUser: "to User",
         query: "Query Following Connection",
+        inputUser: "Please search and select user in the textboxes above.",
       },
       dashboard: {
         accountProfile: {

@@ -63,11 +63,13 @@ export const UserSelectTextBox: React.FC<Props> = (props) => {
     select(suggestion.value);
   };
 
+  const placeholder = useLocalized(root.gettingInfoForInitialId, [props.initialId]);
+
   return (
     <TextInput
       value={text}
       placeholder={initialLoading
-        ? useLocalized(root.gettingInfoForInitialId, [props.initialId])
+        ? placeholder
         : ""}
       disabled={initialLoading}
       onChange={onInput}
