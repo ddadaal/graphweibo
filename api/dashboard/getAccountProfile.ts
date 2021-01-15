@@ -3,6 +3,8 @@ export const endpoint = {
   url: "/dashboard/accountProfile",
 } as const;
 
+const auth = true;
+
 export interface GetAccountProfileSchema {
   responses: {
     200: {

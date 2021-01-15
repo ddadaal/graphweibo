@@ -5,6 +5,7 @@ export const endpoint = {
   url: "/weibo",
 } as const;
 
+
 /**
  * 返回查询ID
  */

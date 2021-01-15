@@ -3,6 +3,8 @@ export const endpoint = {
   url: "/weibo/followings",
 } as const;
 
+const auth = true;
+
 export interface WeiboResult {
 
   /** 这个微博的ID */

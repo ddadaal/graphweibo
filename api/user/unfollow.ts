@@ -3,6 +3,8 @@ export const endpoint = {
   url: "/user/follow",
 } as const;
 
+const auth = true;
+
 /** 取消关注一个用户。 */
 export interface UnfollowUserSchema {
   body: {
