@@ -1,4 +1,6 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
+import { useStore } from "simstate";
+import { ThemeStore } from "src/stores/ThemeStore";
 import { range } from "src/utils/array";
 import { DataSet } from "vis-data";
 import { VisGraph } from "./VisGraph";
@@ -7,6 +9,9 @@ const colors = {
   "intermediate": "#75c2f8",
   "from": "#ff7f0e",
   "to": "#ff7f0e",
+  "white": "#ffffff",
+  "black": "#000000",
+
 };
 
 interface User {
@@ -23,6 +28,10 @@ interface Props {
 }
 
 export const UserGraph: React.FC<Props> = (props) => {
+
+  const themeStore = useStore(ThemeStore);
+
+
   const { fromUser, toUser, intermediateUsers, paths } = props;
 
   // redraw graph when body resized
@@ -35,6 +44,7 @@ export const UserGraph: React.FC<Props> = (props) => {
         edges.push({
           from: path[i],
           to: path[i+1],
+          color: themeStore.theme === "dark" ? colors.white : colors.black,
         });
       });
     });
@@ -47,7 +57,7 @@ export const UserGraph: React.FC<Props> = (props) => {
     ];
 
     return { edges: new DataSet(edges), nodes: new DataSet(nodes) };
-  }, [fromUser, toUser, intermediateUsers, paths]);
+  }, [fromUser, toUser, intermediateUsers, paths, themeStore.theme]);
 
   return (
     <VisGraph

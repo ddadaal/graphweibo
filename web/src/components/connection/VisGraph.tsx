@@ -44,6 +44,10 @@ export const VisGraph: React.FC<Props> = ({
   }, []);
 
   useEffect(() => {
+    network.current!.setData(data);
+  }, [data]);
+
+  useEffect(() => {
     network.current!.setOptions(options);
   }, [options]);
 
