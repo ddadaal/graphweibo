@@ -1,3 +1,3 @@
-import { GetAccountProfileSchema } from "graphweibo-api/dashboard/getAccountProfile";
+import { GetUserProfileSchema } from "graphweibo-api/profile/getUserProfile";
 
-export type AccountProfile = GetAccountProfileSchema["responses"]["200"]["profile"];
+export type AccountProfile = GetUserProfileSchema["responses"]["200"]["profile"];

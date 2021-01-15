@@ -10,8 +10,8 @@ import { toast } from "react-toastify";
 import { DummyAvatar } from "./DummyAvatar";
 import { useStore } from "simstate";
 import { UserStore } from "src/stores/UserStore";
-import { AnchorLink } from "./AnchorLink";
 import Router from "next/router";
+import { AnchorLink } from "./AnchorLink";
 
 const root = lang.components.userListItem;
 
@@ -65,9 +65,13 @@ export const UserListItem: React.FC<Props> = ({
       <Box direction="row" gap="small">
         <DummyAvatar />
         <Box direction="column">
-          <Text>
+          <AnchorLink href={{
+            pathname: "/profile/[userId]",
+            query: { userId: user.userId },
+          }}
+          >
             {user.username}
-          </Text>
+          </AnchorLink>
           <Text>
             <LocalizedString id={root.weiboCount} />
             {" "}

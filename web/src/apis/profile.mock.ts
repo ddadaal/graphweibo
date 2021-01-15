@@ -1,8 +1,8 @@
 import { MockApi } from ".";
-import { dashboardApi } from "./dashboard";
+import { profileApi } from "./profile";
 
-export const dashboardApiMock: MockApi<typeof dashboardApi> = () => ({
-  getAccountProfile: async () => ({
+export const profileApiMock: MockApi<typeof profileApi> = () => ({
+  getUserProfile: async () => ({
     profile: {
       followersCount: 10,
       followingsCount: 23,

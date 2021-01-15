@@ -78,7 +78,7 @@ export default {
       about: "关于",
       welcome: "欢迎您，{}",
       logout: "登出",
-      dashboard: "个人中心",
+      profile: "个人信息",
       upload: "论文上传",
       admin: {
         articles: "文章管理",

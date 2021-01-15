@@ -8,6 +8,7 @@ interface Props {
   weiboCount: number;
   followingsCount: number;
   followersCount: number;
+  userId: string;
 }
 
 const root = lang.pages.dashboard.contentSelector;
@@ -33,7 +34,7 @@ export const ContentSelector: React.FC<Props> = (props) => {
   return (
     <Tabs
       activeIndex={tabs.indexOf(props.tab)}
-      onActive={(i) => Router.push(`/dashboard/${i == 0 ? "" : tabs[i]}`)}
+      onActive={(i) => Router.push(`/profile/${props.userId}/${i == 0 ? "" : tabs[i]}`)}
     >
       <Tab title={<TabTitle textId={root.weibo} count={props.weiboCount} />} />
       <Tab title={<TabTitle textId={root.followers} count={props.followersCount} />} />

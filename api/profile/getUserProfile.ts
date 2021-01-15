@@ -1,11 +1,12 @@
 export const endpoint = {
   method: "GET",
-  url: "/dashboard/accountProfile",
+  url: "/profile",
 } as const;
 
-const auth = true;
-
-export interface GetAccountProfileSchema {
+export interface GetUserProfileSchema {
+  querystring: {
+    userId: string;
+  }
   responses: {
     200: {
       profile: {

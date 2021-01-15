@@ -17,8 +17,8 @@ export const commonLinks = [
   // { href: "/about", textId: root.about, mode: "startsWith" },
 ] as TLink[];
 
-export const userLinks = [
-  { href: "/dashboard", textId: root.dashboard, mode: "startsWith" },
+export const userLinks = (userId: string) => [
+  { href: `/profile/${userId}`, textId: root.profile, mode: "startsWith" },
 ] as TLink[];
 
 export const adminLinks = [

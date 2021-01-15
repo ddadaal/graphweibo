@@ -1,6 +1,6 @@
 import React from "react";
 import { useStore } from "simstate";
-import { UserStore } from "src/stores/UserStore";
+import { getUserInfoInStorage, UserStore } from "src/stores/UserStore";
 import { Nav, Menu, Box, BoxProps } from "grommet";
 import { LocalizedString } from "simstate-i18n";
 import { lang } from "src/i18n";
@@ -160,7 +160,7 @@ export const MainNav: React.FC = () => {
   const userStore = useStore(UserStore);
 
   const authenticatedLinks = userStore.user
-    ? userLinks
+    ? userLinks(userStore.user.userId)
     : [];
 
   const router = useRouter();

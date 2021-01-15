@@ -80,7 +80,7 @@ export default {
       login: "Login",
       welcome: "Welcome, {}",
       logout: "Logout",
-      dashboard: "Dashboard",
+      profile: "Profile",
       admin: {
         articles: "Manage Articles",
         users: "Manage Users",
