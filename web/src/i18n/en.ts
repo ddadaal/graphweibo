@@ -25,6 +25,7 @@ export default {
         unfollowInProgress: "Unfollowing...",
         followComplete: "Followed!",
         unfollowComplete: "Unfollowed!",
+        queryConnection: "Follow Connection",
       },
       tagInput: {
         placeholder: "Press Enter to add one item." ,

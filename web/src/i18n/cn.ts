@@ -25,6 +25,7 @@ export default {
         unfollowInProgress: "取消关注中……",
         followComplete: "关注成功！",
         unfollowComplete: "取消关注成功！",
+        queryConnection: "关注关系",
       },
       tagInput: {
         placeholder: "按下回车以增加一项。",

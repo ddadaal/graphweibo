@@ -8,6 +8,10 @@ import { userApi } from "src/apis/user";
 import { useHttpRequest } from "src/utils/http";
 import { toast } from "react-toastify";
 import { DummyAvatar } from "./DummyAvatar";
+import { useStore } from "simstate";
+import { UserStore } from "src/stores/UserStore";
+import { AnchorLink } from "./AnchorLink";
+import Router from "next/router";
 
 const root = lang.components.userListItem;
 
@@ -38,6 +42,7 @@ export const UserListItem: React.FC<Props> = ({
   onUserUnfollow,
 }) => {
 
+  const userStore = useStore(UserStore);
   const [loading, setLoading] = useState(false);
   const request = useHttpRequest(setLoading);
   const [following, setFollowing] = useState(user.following);
@@ -79,7 +84,22 @@ export const UserListItem: React.FC<Props> = ({
           textId={root.following}
           value={user.followCount}
         />
-        <Box width="small">
+        {
+          userStore.user
+            ?  (
+              <Box width="128px">
+                <Button size="medium" fill secondary label={(
+                  <LocalizedString id={root.queryConnection} />
+                )} onClick={() => Router.push({
+                  pathname: "/connection",
+                  query: { from: userStore.user!.userId , to: user.userId },
+                })} disabled={loading}
+                >
+                </Button>
+              </Box>
+            ) : undefined
+        }
+        <Box width="108px">
           <Button size="medium" fill label={(
             <LocalizedString id={
               loading
