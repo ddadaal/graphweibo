@@ -200,7 +200,8 @@ def searchUserByQuery(query, uid):
             }"%(query)
     resp = json.loads(gc.query("weibo","json", sparql))["results"]["bindings"]
     candidate_user = [data["uid"]["value"] for data in resp]
-    # NOTE 没有搜索到结果，在这个需求里不是错误，是预期情况，只有网络错误等非预期情况才是错误
+    # NOTE 没有搜索到结果，在这个需求里不是错误，是预期情况，搜索本来就可以没有搜索结果，所以直接返回一个空数组就可以了。
+    # 有的API（比如关注用户）默认传入的ID是有效的，只有这种默认存在、但是实际上不存在的意外情况才应该报错
     if len(candidate_user)==0:
         return []
     
