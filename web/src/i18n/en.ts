@@ -117,7 +117,7 @@ export default {
         query: "Query Following Connection",
         inputUser: "Please search and select user in the textboxes above.",
       },
-      dashboard: {
+      profile: {
         accountProfile: {
           username: "Username",
           userId: "User ID",

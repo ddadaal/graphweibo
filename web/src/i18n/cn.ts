@@ -116,7 +116,7 @@ export default {
         query: "查询关注关系",
         inputUser: "请在上面文本框内搜索并选择用户",
       },
-      dashboard: {
+      profile: {
         accountProfile: {
           username: "用户名",
           userId: "用户ID",
@@ -124,8 +124,8 @@ export default {
         },
         contentSelector: {
           weibo: "微博",
-          following: "我关注的用户",
-          followers: "关注我的用户",
+          following: "关注Ta的用户",
+          followers: "Ta关注的用户",
         },
       },
       home: {

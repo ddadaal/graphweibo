@@ -5,7 +5,7 @@ import { lang } from "src/i18n";
 import { formatDateTime } from "src/utils/datetime";
 import { DummyAvatar } from "../DummyAvatar";
 
-const root = lang.pages.dashboard.accountProfile;
+const root = lang.pages.profile.accountProfile;
 
 interface Props {
   username: string;

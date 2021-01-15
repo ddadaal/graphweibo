@@ -23,14 +23,23 @@ interface Props {
   onUserUnfollow?: (user: UserInfo) => void;
 }
 
-const NumberInfo: React.FC<{ textId: string; value: number}> = (props) => {
+interface NumberInfoProps {
+  textId: string;
+  value: number;
+  userId: string;
+  pathname: string;
+}
+
+const NumberInfo: React.FC<NumberInfoProps> = (props) => {
   return (
     <Box direction="column" justify="evenly">
       <Box>
         <LocalizedString id={props.textId} />
       </Box>
       <Box>
-        {props.value}
+        <AnchorLink href={{ pathname: props.pathname, query: { userId: props.userId } }}>
+          {props.value}
+        </AnchorLink>
       </Box>
     </Box>
   );
@@ -75,7 +84,13 @@ export const UserListItem: React.FC<Props> = ({
           <Text>
             <LocalizedString id={root.weiboCount} />
             {" "}
-            {user.weiboCount}
+            <AnchorLink href={{
+              pathname: "/profile/[userId]",
+              query: { userId: user.userId },
+            }}
+            >
+              {user.weiboCount}
+            </AnchorLink>
           </Text>
         </Box>
       </Box>
@@ -83,10 +98,14 @@ export const UserListItem: React.FC<Props> = ({
         <NumberInfo
           textId={root.fans}
           value={user.followerCount}
+          userId={user.userId}
+          pathname="/profile/[userId]/followers"
         />
         <NumberInfo
           textId={root.following}
           value={user.followCount}
+          userId={user.userId}
+          pathname="/profile/[userId]/followings"
         />
         {
           userStore.user

@@ -11,7 +11,7 @@ interface Props {
   userId: string;
 }
 
-const root = lang.pages.dashboard.contentSelector;
+const root = lang.pages.profile.contentSelector;
 
 const tabs = ["weibo", "followings", "followers"];
 
