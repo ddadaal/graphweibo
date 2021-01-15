@@ -32,8 +32,10 @@ export interface UserConnectionSchema {
     };
     /** 某个用户不存在 */
     404: {
-      /** 不存在的用户。 */
-      user: "from" | "to";
+      /** 来源用户不存在 */
+      fromUserNotExists: boolean;
+      /** 目标用户不存在 */
+      toUserNotExists: boolean;
     };
   }
 }

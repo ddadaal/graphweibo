@@ -1,3 +1,4 @@
+import { DH_UNABLE_TO_CHECK_GENERATOR } from "constants";
 import { range } from "src/utils/array";
 import { MockApi } from ".";
 import { userApi } from "./user";
@@ -37,7 +38,10 @@ const exampleGraph = {
 };
 
 export const userApiMock: MockApi<typeof userApi> = () => ({
-  search: async () => {
+  search: async ({ query }) => {
+    if ("userId" in query) {
+      return { results: dummyResults.filter((x) => x.userId === query.userId) };
+    }
     return { results: dummyResults };
   },
   follow: async () => ({}),

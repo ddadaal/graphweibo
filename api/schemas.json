@@ -224,7 +224,7 @@
                   "$ref": "#/definitions/UserConnectionUser",
                   "description": "目标用户的ID和用户名"
                 },
-                "immediateUsers": {
+                "intermediateUsers": {
                   "type": "array",
                   "items": {
                     "$ref": "#/definitions/UserConnectionUser"
@@ -245,7 +245,7 @@
               "required": [
                 "fromUser",
                 "toUser",
-                "immediateUsers",
+                "intermediateUsers",
                 "paths"
               ],
               "additionalProperties": false,
@@ -254,17 +254,18 @@
             "404": {
               "type": "object",
               "properties": {
-                "user": {
-                  "type": "string",
-                  "enum": [
-                    "from",
-                    "to"
-                  ],
-                  "description": "不存在的用户。"
+                "fromUserNotExists": {
+                  "type": "boolean",
+                  "description": "来源用户不存在"
+                },
+                "toUserNotExists": {
+                  "type": "boolean",
+                  "description": "目标用户不存在"
                 }
               },
               "required": [
-                "user"
+                "fromUserNotExists",
+                "toUserNotExists"
               ],
               "additionalProperties": false,
               "description": "某个用户不存在"
@@ -338,17 +339,34 @@
       "type": "object",
       "properties": {
         "querystring": {
-          "type": "object",
-          "properties": {
-            "query": {
-              "type": "string",
-              "description": "查询字符串"
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "query": {
+                  "type": "string",
+                  "description": "查询字符串"
+                }
+              },
+              "required": [
+                "query"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "type": "string",
+                  "description": "用户ID"
+                }
+              },
+              "required": [
+                "userId"
+              ],
+              "additionalProperties": false
             }
-          },
-          "required": [
-            "query"
-          ],
-          "additionalProperties": false
+          ]
         },
         "responses": {
           "type": "object",
@@ -381,7 +399,7 @@
         "responses"
       ],
       "additionalProperties": false,
-      "description": "根据查询字符串搜索用户"
+      "description": "搜索用户\r 如果参数里有userId，那么根据ID查用户，返回数组中最多只有一项\r 如果参数里没有userId，那么一定有query，根据query查询用户。"
     },
     "GetFollowersSchema": {
       "type": "object",

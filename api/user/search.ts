@@ -40,11 +40,18 @@ export interface UserResult {
 
 }
 
-/** 根据查询字符串搜索用户 */
+/**
+ * 搜索用户
+ * 如果参数里有userId，那么根据ID查用户，返回数组中最多只有一项
+ * 如果参数里没有userId，那么一定有query，根据query查询用户。
+*/
 export interface SearchUserSchema {
   querystring: {
     /** 查询字符串 */
     query: string;
+  } | {
+    /** 用户ID */
+    userId: string;
   };
   responses: {
     200: {

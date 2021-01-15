@@ -6,6 +6,7 @@ export default {
   name: "English",
   definitions: {
     components: {
+      userSelectTextBox: { gettingInfoForInitialId: "Querying user {}..." },
       weiboInput: {
         placeholder: "Something interesting to share?" ,
         submit: "Send",
@@ -109,6 +110,11 @@ export default {
       integer: "Please input a valid integer.",
     },
     pages: {
+      connection: {
+        fromUser: "from User",
+        toUser: "to User",
+        query: "Query Following Connection",
+      },
       dashboard: {
         accountProfile: {
           username: "Username",

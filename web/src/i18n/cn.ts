@@ -6,6 +6,7 @@ export default {
   name: "简体中文",
   definitions: {
     components: {
+      userSelectTextBox: { gettingInfoForInitialId: "查询用户ID{}中……" },
       weiboInput: {
         placeholder: "有什么新鲜事想告诉大家？" ,
         submit: "发送",
@@ -108,6 +109,11 @@ export default {
       integer: "请输入整数。",
     },
     pages: {
+      connection: {
+        fromUser: "从用户",
+        toUser: "到用户",
+        query: "查询关注关系",
+      },
       dashboard: {
         accountProfile: {
           username: "用户名",
