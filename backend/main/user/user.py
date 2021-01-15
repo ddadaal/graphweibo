@@ -29,7 +29,8 @@ def register_api():
 # 用户登录
 @user.route('/token', methods=['GET'])
 def login_api():
-    data = json.loads(request.get_data())
+    # data = json.loads(request.get_data())
+    data = request.args
     username = data['username']
     password = data['password']
 
@@ -48,6 +49,7 @@ def login_api():
 def change_follow_api():
     # 获取对象
     data = json.loads(request.get_data())
+
     targetID = data['userID']
     # 获取当前用户？
     identity = identify(request)
@@ -83,7 +85,9 @@ def change_follow_api():
 # 获取粉丝
 @user.route('/followers', methods=['GET'])
 def get_followers_api():
-    data = json.loads(request.get_data())
+    # data = json.loads(request.get_data())
+    data = request.args
+
     userID = data['userID']
 
     # TODO
@@ -122,9 +126,9 @@ def search_api():
     else:
         userID = ''
     #获取查询字符串
-    # get_data不能获得GET请求的querystring
+    # NOTE 下述方法不能获得GET请求的querystring。
+    # data = json.loads(request.get_data())
     data = request.args
-    print(data)
 
     if 'userID' in data.keys():
         queryID = data['userID']
@@ -145,7 +149,8 @@ def search_api():
 @user.route('/connection', methods=['GET'])
 def connection_api():
     #获取查询用户
-    data = json.loads(request.get_data())
+    # data = json.loads(request.get_data())
+    data = request.args
     fromUser = data['fromUserId']
     toUser = data['toUserId']
 

@@ -34,7 +34,8 @@ def getWeibo():
 
     if request.method=='GET':
         # 获取查询ID
-        data = json.loads(request.get_data())
+        # data = json.loads(request.get_data())
+        data = request.args
         querystr = data['userID']
         # TODO
         # 获取该用户的所有微博
