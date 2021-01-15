@@ -1,6 +1,6 @@
 #coding:utf-8 
 #user 
-from data.utils import getFollowingsWeibo, getUserWeibo, postWeibo
+from data.utils import getFollowingsWeibo, getNewWeibos, getUserWeibo, postWeibo
 from flask import Blueprint #, render_template, redirect 
 from flask import request, json, jsonify, Response
 # from app import app
@@ -62,3 +62,14 @@ def getAllFollowingsWeibo():
         return Response(json.dumps({'results': result['results']}), status=200, content_type='application/json')
     else:
         return Response(status=404)
+
+# 获得系统中最新的10条微博
+@weibo.route("/new", methods=['GET'])
+def getNewWeibos_api():
+    result = getNewWeibos()
+    if result['state']:
+        return Response(json.dumps({'results': result['results']}), status=200, content_type='application/json')
+    else:
+        return Response(status=500)
+
+

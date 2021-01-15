@@ -9,6 +9,7 @@ import { HttpError } from "src/apis/fetch";
 import { UnifiedErrorPage } from "src/components/errors/UnifiedErrorPage";
 import { WeiboListItem } from "src/components/WeiboListItem";
 import { WeiboResult } from "graphweibo-api/weibo/getFollowings";
+import { getCurrentUserInCookie } from "src/stores/UserStore";
 
 const api = getApi(weiboApi);
 
@@ -41,8 +42,12 @@ const Home: NextPage<Props> = (props) => {
   );
 };
 
-Home.getInitialProps = async () => {
-  const data = await api.getFollowings({})
+Home.getInitialProps = async (ctx) => {
+  const user = getCurrentUserInCookie(ctx);
+
+  const data = await (
+    user ? api.getFollowings({}) : api.getNewWeibos({})
+  )
     .catch((r: HttpError) => ({ error: r }));
 
   return data;

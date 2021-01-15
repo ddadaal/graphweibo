@@ -181,9 +181,19 @@ def getFollowings(uid):
             elem["followings"] = False
         ans.append(elem)
         print(elem)
-    return ans
+    return {
+        'state': True,
+        'results': ans
+    }
 
-def searchUser(query, uid):
+# TODO
+def getNewWeibos():
+    return {
+        'state': True,
+        'results': []
+    }
+
+def searchUserByQuery(query, uid):
     ans = {}
     sparql = prefix+" select ?uid where{\
             ?uid vocab:user_name ?username \
@@ -273,13 +283,13 @@ def getUserWeibo(uid):
 
     return ans
 
-# if __name__ == "__main__":
-#     # getProfile("2452144190")
-#     # follow('1000080335','1940992571')
-#     getFollowers("1000080335")
-#     # getFollowings('1000080335')
-#     # postWeibo("2452144190","this is a test")
-#     # getUserWeibo('2452144190')
-#     # searchUser("Mini", "2452144190")
-#     # register("q3erf", "145115")
-#     # login("q3erf", "145115")
+if __name__ == "__main__":
+    # getProfile("2452144190")
+    # follow('1000080335','1940992571')
+    getFollowers("1000080335")
+    # getFollowings('1000080335')
+    # postWeibo("2452144190","this is a test")
+    # getUserWeibo('2452144190')
+    # searchUser("Mini", "2452144190")
+    # register("q3erf", "145115")
+    # login("q3erf", "145115")

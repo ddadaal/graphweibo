@@ -201,3 +201,21 @@ return:{
 ```
 
 
+## def getNewWeibos()
+获得系统中最新的10条微博
+```python
+return:{
+        state:true/false
+        results:list[
+                {
+                        weiboId: string;微博ID
+                        senderId: string;发送的用户ID
+                        senderUsername: string;发送的用户的用户名
+                        sendTime: string;发送时间
+                        content: string;内容
+                }  
+        ]
+        }
+```
+
+
