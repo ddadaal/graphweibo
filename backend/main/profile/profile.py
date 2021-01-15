@@ -8,20 +8,16 @@ from flask import request, json, jsonify, Response
 from main.auths import identify
 from datetime import datetime
 
-dashboard = Blueprint('dashboard',__name__) 
+profile = Blueprint('profile',__name__) 
 
 # 获取用户信息
-@dashboard.route('/accountProfile', methods=['GET'])
+@profile.route('/profile', methods=['GET'])
 def getAccountProfile():
-    identity = identify(request)
-    if identity['state']:
-        userID = identity['msg']
-    else:
-        return Response(status=401)
+    data = request.args
 
     # TODO
     # 通过用户ID获取用户的所有信息，返回用户数据
-    result = getProfile(userID)
+    result = getProfile(data['userId'])
 
     if result['state']:
         result.pop('state')
