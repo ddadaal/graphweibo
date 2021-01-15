@@ -38,11 +38,22 @@ def register(uname, pwd):
     return ans
 
 def login(uname, pwd):
-    sparql = prefix+" select ?pwd where{\
-            user:%s vocab:user_pwd ?pwd.\
-            }"%(uname)
+    sparql = prefix+" select ?uid where{\
+            ?uid vocab:user_pwd '%s'.\
+            ?uid vocab:user_name '%s'.\
+            }"%(pwd, uname)
     resp = json.loads(gc.query("weibo","json", sparql))["results"]["bindings"]
     print(resp)
+    ans = {}
+    if len(resp)==0:
+        ans["state"] = False
+        ans["uid"] = ""
+    else:
+        ans["state"] = True
+        ans["uid"] = resp[0]["uid"]
+        print(ans)
+    
+    return ans
     
     
 
@@ -264,10 +275,10 @@ def getUserWeibo(uid):
 
 # getProfile("2452144190")
 # follow('1000080335','1940992571')
-# getFollowers("1000080335")
+getFollowers("1000080335")
 # getFollowings('1000080335')
 # postWeibo("2452144190","this is a test")
 # getUserWeibo('2452144190')
 # searchUser("Mini", "2452144190")
 # register("q3erf", "145115")
-login("q3erf", "145115")
+# login("q3erf", "145115")
