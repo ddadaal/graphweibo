@@ -22,7 +22,7 @@ def getWeibo():
         if identity['state']:
             userID = identity['msg']
         else:
-            return Response(status=405)
+            return Response(status=401)
         # TODO
         # 发微博
         result = postWeibo(userID,contents)
@@ -52,7 +52,7 @@ def getAllFollowingsWeibo():
     if identity['state']:
         userID = identity['msg']
     else:
-        return Response(status=405)
+        return Response(status=401)
     # TODO
     # 找所有已关注人的微博
     result = getFollwingsWeibo(userID)

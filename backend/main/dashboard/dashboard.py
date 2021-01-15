@@ -17,7 +17,7 @@ def getAccountProfile():
     if identity['state']:
         userID = identity['msg']
     else:
-        return Response(status=405)
+        return Response(status=401)
 
     # TODO
     # 通过用户ID获取用户的所有信息，返回用户数据
