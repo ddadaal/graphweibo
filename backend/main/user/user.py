@@ -45,7 +45,7 @@ def login_api():
 
 # 关注/取关用户
 @user.route('/follow', methods=['POST','DELETE'])
-def changeFollow():
+def change_follow_api():
     # 获取对象
     data = json.loads(request.get_data())
     targetID = data['userID']
@@ -54,7 +54,7 @@ def changeFollow():
     if identity['state']:
         userID = identity['msg']
     else:
-        return Response(status=405)
+        return Response(status=401)
 
     # 关注
     if request.method=='POST':
@@ -82,7 +82,7 @@ def changeFollow():
 
 # 获取粉丝
 @user.route('/followers', methods=['GET'])
-def getFollowers():
+def get_followers_api():
     data = json.loads(request.get_data())
     userID = data['userID']
 
@@ -114,22 +114,43 @@ def getFollowings():
 
 # 查找用户
 @user.route('/search', methods=['GET'])
-def search():
-    #获取查询字符串
-    data = json.loads(request.get_data())
-    querystr = data['query']
-    #获取当前用户？
+def search_api():
+    #获取当前用户
     identity = identify(request)
     if identity['state']:
         userID = identity['msg']
     else:
-        return Response(status=405)
-    # TODO
-    # 查找该用户名对应的用户，若成功返回该用户信息userResult[]
-    result = searchUser(querystr,userID)
+        userID = ''
+    #获取查询字符串
+    data = json.loads(request.get_data())
+
+    if 'userID' in data.keys():
+        queryID = data['userID']
+        result = searchUserByID(queryID,userID)
+    else:
+        querystr = data['query']
+        result = searchUserByQuery(querystr,userID)
 
     if result['state']:
         result.pop('state')
         return Response(json.dumps(result), status=200, content_type='application/json')
     else:
         return Response(status=404)
+
+
+# 查找两用户之间的关系
+@user.route('/connection', methods=['GET'])
+def connection_api():
+    #获取查询用户
+    data = json.loads(request.get_data())
+    fromUser = data['fromUserId']
+    toUser = data['toUserId']
+
+    result = getUserConnection(fromUser,toUser)
+
+    if result['state']:
+        result.pop('state')
+        return Response(json.dumps(result), status=200, content_type='application/json')
+    else:
+        result.pop('state')
+        return Response(json.dumps(result),status=404)
