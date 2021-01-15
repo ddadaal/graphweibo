@@ -86,19 +86,37 @@ return:{
         }  
 ```
 
-## def searchUser(query:string, uid:string)
-搜索用户
+## def searchUserByQuery(querystr:string, uid:string)
+搜索用户，查找和字符串最匹配的多个用户，返回他们的信息
 ```python
 return: {
         state:True/False
-        userResult:list[
+        results:list[
                 {username(string),
                 userId(string),
                 weiboCount(int): 微博数目,
                 followerCount (int): 关注ta的人,
                 followCount (int): ta关注的人,
-                following(bool):我是否关注他 true/false,
-                followed(bool):他是否关注我 true/false,
+                following(bool):我是否关注他,如果第二个参数为空字符串''，则为false true/false,
+                followed(bool):他是否关注我，如果第二个参数为空字符串，则为false true/false,
+        }]
+}
+        
+```
+
+## def searchUserByID(queryid:string, uid:string)
+搜索用户，查找用户名对应的单个用户
+```python
+return: {
+        state:True/False
+        results:list[
+                {username(string),
+                userId(string),
+                weiboCount(int): 微博数目,
+                followerCount (int): 关注ta的人,
+                followCount (int): ta关注的人,
+                following(bool):我是否关注他,如果第二个参数为空字符串''，则为false true/false,
+                followed(bool):他是否关注我，如果第二个参数为空字符串，则为false true/false,
         }]
 }
         
@@ -145,6 +163,41 @@ return:{
                 }  
         ]
         }
+```
+
+## def getUserConnection(fromuid:string,fromuid:string)
+获取某个特定用户的微博
+```python
+return:{
+        state:true
+        /** 源用户的ID和用户名 */
+        fromUser: {
+                    userId: string
+                    username: string
+                  }
+        /** 目标用户的ID和用户名 */
+        toUser: {
+                    userId: string
+                    username: string
+                }
+        /** 中间用户的ID和用户名，不包含源用户和目标用户*/
+        intermediateUsers:list[{
+                    userId: string
+                    username: string
+                }]
+        /**
+         * 所有源用户和目标用户之间的路径。
+         * 每个节点用ID表示，每个小数组为一条路径。
+         * 路径中需要包含源节点和目标节点
+         **/
+        paths: string[][];
+        }
+如果失败返回：
+return:{
+        state:False
+        fromUserNotExists: boolean; 来源用户不存在
+        toUserNotExists: boolean; 目标用户不存在
+        
 ```
 
 
