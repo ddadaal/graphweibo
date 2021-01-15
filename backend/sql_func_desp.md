@@ -89,9 +89,7 @@ return:{
 ## def searchUserByQuery(querystr:string, uid:string)
 搜索用户，查找和字符串最匹配的多个用户，返回他们的信息
 ```python
-return: {
-        state:True/False
-        results:list[
+return: list[
                 {username(string),
                 userId(string),
                 weiboCount(int): 微博数目,
@@ -100,16 +98,12 @@ return: {
                 following(bool):我是否关注他,如果第二个参数为空字符串''，则为false true/false,
                 followed(bool):他是否关注我，如果第二个参数为空字符串，则为false true/false,
         }]
-}
-        
 ```
 
 ## def searchUserByID(queryid:string, uid:string)
 搜索用户，查找用户名对应的单个用户
 ```python
-return: {
-        state:True/False
-        results:list[
+return: list[
                 {username(string),
                 userId(string),
                 weiboCount(int): 微博数目,
@@ -118,7 +112,6 @@ return: {
                 following(bool):我是否关注他,如果第二个参数为空字符串''，则为false true/false,
                 followed(bool):他是否关注我，如果第二个参数为空字符串，则为false true/false,
         }]
-}
         
 ```
 
@@ -204,9 +197,7 @@ return:{
 ## def getNewWeibos()
 获得系统中最新的10条微博
 ```python
-return:{
-        state:true/false
-        results:list[
+return: list[
                 {
                         weiboId: string;微博ID
                         senderId: string;发送的用户ID
@@ -215,7 +206,6 @@ return:{
                         content: string;内容
                 }  
         ]
-        }
 ```
 
 

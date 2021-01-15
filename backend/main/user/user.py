@@ -122,7 +122,9 @@ def search_api():
     else:
         userID = ''
     #获取查询字符串
-    data = json.loads(request.get_data())
+    # get_data不能获得GET请求的querystring
+    data = request.args
+    print(data)
 
     if 'userID' in data.keys():
         queryID = data['userID']
@@ -131,11 +133,12 @@ def search_api():
         querystr = data['query']
         result = searchUserByQuery(querystr,userID)
 
-    if result['state']:
-        result.pop('state')
-        return Response(json.dumps(result), status=200, content_type='application/json')
-    else:
-        return Response(status=404)
+    # NOTE 没有搜索到结果，在这个需求里不是错误，是预期情况，只有网络错误等非预期情况才是错误，才应该报错404
+    # if result['state']:
+    # result.pop('state')
+    return Response(json.dumps({ 'results': result}), status=200, content_type='application/json')
+    # else:
+    #     return Response(status=404)
 
 
 # 查找两用户之间的关系

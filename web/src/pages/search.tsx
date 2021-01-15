@@ -92,6 +92,10 @@ export const SearchPage: NextPage<Props> = (props) => {
 SearchPage.getInitialProps = async (context) => {
   const query = context.query as { query: string };
 
+  if (!query.query) {
+    query.query = "";
+  }
+
   const data = await api.search({ query })
     .catch((r: HttpError) => ({ error: r }));
 

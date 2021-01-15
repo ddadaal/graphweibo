@@ -4,8 +4,7 @@ import random
 import json
 import datetime
 
-
-IP = "162.105.132.76"
+IP = "127.0.0.1"
 Port = 9000
 username = "root"
 password = "123456"
@@ -194,16 +193,15 @@ def getNewWeibos():
     }
 
 def searchUserByQuery(query, uid):
-    ans = {}
     sparql = prefix+" select ?uid where{\
             ?uid vocab:user_name ?username \
             FILTER regex(?username, '.*%s.*').\
             }"%(query)
     resp = json.loads(gc.query("weibo","json", sparql))["results"]["bindings"]
     candidate_user = [data["uid"]["value"] for data in resp]
+    # NOTE 没有搜索到结果，在这个需求里不是错误，是预期情况，只有网络错误等非预期情况才是错误
     if len(candidate_user)==0:
-        ans["state"] = False
-        return ans
+        return []
     
     user_list = []
     for item in candidate_user:
@@ -224,9 +222,7 @@ def searchUserByQuery(query, uid):
         d["followed"] = isFollow(d["userId"], uid)
         d["following"] = isFollow(uid, d["userId"])
         user_list.append(d)
-    ans["userResult"] = user_list
-    print(ans)
-    return ans
+    return user_list
 
 
 def postWeibo(uid, content):
@@ -286,10 +282,11 @@ def getUserWeibo(uid):
 if __name__ == "__main__":
     # getProfile("2452144190")
     # follow('1000080335','1940992571')
-    getFollowers("1000080335")
+    # getFollowers("1000080335")
     # getFollowings('1000080335')
     # postWeibo("2452144190","this is a test")
     # getUserWeibo('2452144190')
-    # searchUser("Mini", "2452144190")
+    # searchUserByQuery("Mini", "2452144190")
     # register("q3erf", "145115")
     # login("q3erf", "145115")
+    pass
