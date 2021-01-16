@@ -161,9 +161,12 @@ def getFollowers(uid, myid, page):
         elem["following"] = myid and isFollow(myid, elem["uid"])
         elem["followed"] = myid and isFollow(elem["uid"], myid)
         ans.append(elem)
-        print(elem)
+        # print(elem)
     
-    return ans
+    return {
+        'state': True,
+        'result': (ans[(page-1) * page_size : page * page_size], len(ans))
+    }
 
 def getFollowings(uid, myid, page):
     ans = []
@@ -181,11 +184,11 @@ def getFollowings(uid, myid, page):
         elem["following"] = myid and isFollow(myid, elem["uid"])
         elem["followed"] = myid and isFollow(elem["uid"], myid)
         ans.append(elem)
-        print(elem)
+        # print(elem)
     
     return {
         'state': True,
-        'result': (ans, len(ans)),
+        'result': (ans[(page-1) * page_size : page * page_size], len(ans))
     }
 
 
