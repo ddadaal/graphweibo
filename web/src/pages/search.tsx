@@ -5,7 +5,7 @@ import { useAsync } from "react-async";
 import { getApi } from "src/apis";
 import { NextPage } from "next";
 import { OverlayLoading } from "src/components/loading/OverlayLoading";
-import { queryToString } from "src/utils/querystring";
+import { queryToIntOrDefault, queryToString } from "src/utils/querystring";
 import { SearchBar } from "src/components/SearchBar";
 import { useFirstMount } from "src/utils/useFirstMount";
 import { HttpError } from "src/apis/fetch";
@@ -15,11 +15,13 @@ import { useHttpErrorHandler } from "src/utils/http";
 import { UserListItem } from "src/components/UserListItem";
 import { userApi } from "src/apis/user";
 import { UserResult } from "graphweibo-api/user/search";
+import { Pagination } from "src/components/Pagination";
 
 const api = getApi(userApi);
 
 type Props = SSRPageProps<{
   results: UserResult[];
+  totalCount: number;
 }>;
 
 const search = ([query]: any[]) => api.search({ query });
@@ -42,7 +44,7 @@ export const SearchPage: NextPage<Props> = (props) => {
 
   const { data, isPending, run } = useAsync({
     deferFn: search,
-    initialValue: { results: props.results ?? []},
+    initialValue: { results: props.results ?? [], totalCount: props.totalCount ?? 0 },
     onReject: errorHandler,
   });
 
@@ -62,6 +64,7 @@ export const SearchPage: NextPage<Props> = (props) => {
   }, [router, run, query]);
 
   const searchText = queryToString(query?.searchText ?? "");
+  const currentPage = queryToIntOrDefault(query.page, 1);
 
   return (
     <Box flex="grow" direction="column">
@@ -82,7 +85,19 @@ export const SearchPage: NextPage<Props> = (props) => {
                 />
               ))}
             </Box>
+            <Box direction="row" justify="center">
+              <Pagination
+                currentPage={currentPage}
+                itemsPerPage={10}
+                totalItemsCount={data!.totalCount}
+                getUrl={(i) => ({
+                  pathname: "/search",
+                  query: { ...query, page: i },
+                })}
+              />
+            </Box>
           </OverlayLoading>
+
         </Box>
       </Box>
     </Box>

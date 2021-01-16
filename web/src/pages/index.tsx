@@ -46,7 +46,7 @@ Home.getInitialProps = async (ctx) => {
   const user = getCurrentUserInCookie(ctx);
 
   const data = await (
-    user ? api.getFollowings({}) : api.getNewWeibos({})
+    user ? api.getFollowings({ query: {} }) : api.getNewWeibos({})
   )
     .catch((r: HttpError) => ({ error: r }));
 

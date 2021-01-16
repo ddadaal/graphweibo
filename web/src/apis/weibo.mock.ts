@@ -23,7 +23,7 @@ export const weiboApiMock: MockApi<typeof weiboApi> = () => ({
     return { results: dummyResults };
   },
   send: async () => ({}),
-  getByUser: async () => ({ results: dummyResults }),
-  getFollowings: async () => ({ results: dummyResults }),
+  getByUser: async () => ({ results: dummyResults, totalCount: dummyResults.length }),
+  getFollowings: async () => ({ results: dummyResults, totalCount: dummyResults.length }),
   getNewWeibos: async () => ({ results: dummyResults }),
 });

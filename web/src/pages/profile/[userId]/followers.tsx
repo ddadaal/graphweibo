@@ -11,14 +11,18 @@ import { UserListItem } from "src/components/UserListItem";
 import { DashboardLayout } from "src/layouts/DashboardLayout";
 import { AccountProfile } from "src/models/AccountProfile";
 import { SSRPageProps } from "src/utils/ssr";
-import { queryToString } from "src/utils/querystring";
+import { queryToIntOrDefault, queryToString } from "src/utils/querystring";
 import {
   NoUserIdErrorPage,
   UserNotExistErrorPage,
 } from "src/components/dashboard/errorPages";
+import { Pagination } from "src/components/Pagination";
 
 type Props = SSRPageProps<{
+  page: number;
+  userId: string;
   profile: AccountProfile;
+  totalCount: number;
   followers: UserResult[];
 }>;
 
@@ -56,6 +60,17 @@ const DashboardFollowersPage: NextPage<Props> = (props) => {
               setProfile((p) => ({ ...p, followingsCount: p.followingsCount-1 }))}
           />
         ))}
+        <Box direction="row" justify="center">
+          <Pagination
+            currentPage={props.page}
+            itemsPerPage={10}
+            totalItemsCount={props.totalCount}
+            getUrl={(i) => ({
+              pathname: "/profile/[userId]/followers",
+              query: { userId: props.userId, page: i },
+            })}
+          />
+        </Box>
       </Box>
     </DashboardLayout>
   );
@@ -69,11 +84,14 @@ DashboardFollowersPage.getInitialProps = async (ctx) => {
     return { error: { status: 400, data: {} } };
   }
 
+  const page = queryToIntOrDefault(ctx.query.page, 1);
+
   const data = await Promise.all([
     api.getUserProfile({ query: { userId } }),
-    uapi.getFollowers({ query: { userId } }),
+    uapi.getFollowers({ query: { userId, page } }),
   ])
-    .then(([{ profile },{ followers }]) => ({ profile, followers }))
+    .then(([{ profile },{ totalCount, followers }]) =>
+      ({ profile, followers, totalCount, page, userId }))
     .catch((r: HttpError) => ({ error: r }));
 
   return data;

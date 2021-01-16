@@ -10,7 +10,6 @@ import { authApis } from "src/apis/auth";
 import { useStore } from "simstate";
 import { UserStore } from "src/stores/UserStore";
 import Router from "next/router";
-import { emailValidation } from "src/utils/validations/emailValidation";
 import { useHttpRequest } from "src/utils/http";
 import { AnchorLink } from "src/components/AnchorLink";
 import { toast } from "react-toastify";
