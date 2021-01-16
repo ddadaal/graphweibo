@@ -47,7 +47,7 @@ export const SearchPage: NextPage<Props> = (props) => {
     router.push({ pathname: "/search", query: combinedQuery });
   }, [router, query]);
 
-  const searchText = queryToString(query?.searchText ?? "");
+  const searchText = queryToString(query?.query ?? "");
   const currentPage = queryToIntOrDefault(query.page, 1);
 
   return (
