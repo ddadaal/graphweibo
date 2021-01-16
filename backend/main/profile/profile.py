@@ -11,7 +11,7 @@ from datetime import datetime
 profile = Blueprint('profile',__name__) 
 
 # 获取用户信息
-@profile.route('/', methods=['GET'])
+@profile.route('', methods=['GET'])
 def getAccountProfile():
     data = request.args
 
