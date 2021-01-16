@@ -1,11 +1,13 @@
 import { UserResult } from "graphweibo-api/user/search";
 import { Box, TextInput } from "grommet";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocalized } from "simstate-i18n";
 import { getApi } from "src/apis";
 import { userApi } from "src/apis/user";
 import { lang } from "src/i18n";
 import { UserInfo } from "src/models/UserInfo";
+import { throttle } from "src/utils/throttle";
+import useConstant from "src/utils/useConstant";
 
 const root = lang.components.userSelectTextBox;
 
@@ -31,15 +33,24 @@ export const UserSelectTextBox: React.FC<Props> = (props) => {
     props.onSelected(userResult);
   };
 
+  // only triggers search user when last search has completed
+  // due to limitation of backend
+  const lastRequestCompleted = useRef(true);
+
   const onInput = async (e) => {
     const newValue = e.target.value;
     setText(newValue);
     props.onSelected(null);
-    try {
-      const searchResult = await api.search({ query: { query: newValue } });
-      setSuggestions(searchResult.results);
-    } catch (e) {
+    if (lastRequestCompleted.current) {
+      lastRequestCompleted.current = false;
+      try {
+        const searchResult = await api.search({ query: { query: newValue } });
+        setSuggestions(searchResult.results);
+      } catch (e) {
       // ignored
+      } finally {
+        lastRequestCompleted.current = true;
+      }
     }
   };
 
