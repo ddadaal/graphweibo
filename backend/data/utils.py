@@ -60,8 +60,9 @@ def login(uname, pwd):
     
     
 
+
 def getProfile(uid):
-    ans = {}
+    ans = { "userId": uid }
     sparql = prefix+" select ?x where{ user:%s vocab:user_name ?x.}"%(uid)
     ans["username"] = json.loads(gc.query("weibo","json", sparql))["results"]["bindings"][0]["x"]["value"]
     
@@ -77,7 +78,10 @@ def getProfile(uid):
     sparql = prefix+" select ?x where{ user:%s vocab:user_friendsnum ?x }"%(uid)
     ans["followingsCount"] = json.loads(gc.query("weibo","json", sparql))["results"]["bindings"][0]["x"]["value"]
     
-    return ans
+    return {
+        'state': True,
+        'result': ans,
+    }
 
 
 def follow(uid1, uid2):
@@ -196,7 +200,7 @@ def getNewWeibos():
         'results': []
     }
 
-def paginated_query(clause: str,  select: str, count_select: str, orderby: str, page: int) -> Tuple[List, int]:
+def paginated_query(clause: str, select: str, count_select: str, orderby: str, page: int) -> Tuple[List, int]:
 
     sparql = prefix + " select (count(%s) as ?c) where {\
         %s\
@@ -205,6 +209,7 @@ def paginated_query(clause: str,  select: str, count_select: str, orderby: str, 
     # 1. query the count
     resp = json.loads(gc.query("weibo", "json", sparql))
     count = int(resp["results"]["bindings"][0]["c"]["value"])
+    print(resp)
 
     if count == 0:
         return [], 0
@@ -218,7 +223,10 @@ def paginated_query(clause: str,  select: str, count_select: str, orderby: str, 
         OFFSET %d \
         " % (select, clause, orderby, page_size, (page - 1) * page_size)
     
-    return json.loads(gc.query("weibo", "json", sparql))["results"]["bindings"], count
+    resp = json.loads(gc.query("weibo", "json", sparql))
+    print(resp)
+
+    return resp["results"]["bindings"], count
 
 
 def searchUserByQuery(query, uid, page):
@@ -226,7 +234,7 @@ def searchUserByQuery(query, uid, page):
     clause ="\
             ?uid vocab:user_name ?username \
             FILTER regex(?username, '.*%s.*').\
-            "
+            " % (query)
     resp, count = paginated_query(clause, "?uid", "?uid", "?uid", page)
 
     # NOTE 没有搜索到结果，在这个需求里不是错误，是预期情况，搜索本来就可以没有搜索结果，所以直接返回一个空数组就可以了。
@@ -295,28 +303,37 @@ def getFollowingsWeibo(uid):
     return ans
 
 def getUserWeibo(uid, page):
-    sparql = prefix+" select ?wbid ?username ?sendTime ?content where {\
+
+    # TODO check user existence
+
+    clause = "\
             ?wbid vocab:weibo_uid '%s'.\
             ?wbid vocab:weibo_date ?sendTime.\
             ?wbid vocab:weibo_text ?content.\
-            }"%(uid)
-    resp = json.loads(gc.query("weibo", "json", sparql))["results"]["bindings"]
-    if len(resp)==0:
-        ans = {}
-        ans["state"] = False
-        return ans
-    ans = []    
+            " % (uid)
+        
+    resp, count = paginated_query(clause, 
+        "?wbid ?sendTime ?content",
+        "?wbid",
+        "DESC(?sendTime)",
+        page
+    )
+
+    ans = []
     for data in resp:
         ans_elem = {}
         ans_elem["weiboId"] = data["wbid"]["value"][-16:]
         ans_elem["senderId"] = uid
         ans_elem["sendTime"] = data["sendTime"]["value"]
         ans_elem["content"] = data["content"]["value"]
-        ans_elem["senderUsername"] = getProfile(uid)["username"]
+        ans_elem["senderUsername"] = getProfile(uid)['result']["username"]
         ans.append(ans_elem)
-        print(ans)
+        # print(ans)
 
-    return ans
+    return {
+        'state': True,
+        'result': (ans, count)
+    }
 
 if __name__ == "__main__":
     # getProfile("2452144190")

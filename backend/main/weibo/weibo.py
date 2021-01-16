@@ -1,5 +1,6 @@
 #coding:utf-8 
 #user 
+from main.utils import get_page
 from data.utils import getFollowingsWeibo, getNewWeibos, getUserWeibo, postWeibo
 from flask import Blueprint #, render_template, redirect 
 from flask import request, json, jsonify, Response
@@ -34,14 +35,16 @@ def getWeibo():
 
     if request.method=='GET':
         # 获取查询ID
-        # data = json.loads(request.get_data())
         data = request.args
         querystr = data['userId']
-        # TODO
+        page = get_page(data)
+
         # 获取该用户的所有微博
-        result = getUserWeibo(querystr)
+        result = getUserWeibo(querystr, page)
         if result['state']:
-            return Response(json.dumps({'results': result['results']}), status=200, content_type='application/json')
+            ans, count = result['result']
+            print(ans)
+            return Response(json.dumps({'results': ans, 'totalCount': count }), status=200, content_type='application/json')
         else:
             return Response(status=404)
 

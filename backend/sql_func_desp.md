@@ -150,7 +150,7 @@ return:{
 ```python
 return:{
         state:true/false
-        results:list[
+        results:tuple([
                 {
                         weiboId: string;微博ID
                         senderId: string;发送的用户ID
@@ -158,7 +158,7 @@ return:{
                         sendTime: string;发送时间
                         content: string;内容
                 }  
-        ]
+        ], total_count)
         }
 ```
 

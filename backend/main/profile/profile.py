@@ -11,7 +11,7 @@ from datetime import datetime
 profile = Blueprint('profile',__name__) 
 
 # 获取用户信息
-@profile.route('/profile', methods=['GET'])
+@profile.route('/', methods=['GET'])
 def getAccountProfile():
     data = request.args
 
@@ -23,7 +23,8 @@ def getAccountProfile():
     result = getProfile(data['userId'])
 
     if result['state']:
-        result.pop('state')
-        return Response(json.dumps(result), status=200, content_type='application/json')
+        return Response(json.dumps({
+            'profile': result['result']
+        }), status=200, content_type='application/json')
     else:
         return Response(status=404)
