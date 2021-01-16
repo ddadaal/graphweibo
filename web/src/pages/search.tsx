@@ -40,28 +40,12 @@ export const SearchPage: NextPage<Props> = (props) => {
     return <UnifiedErrorPage error={props.error} />;
   }
 
-  const errorHandler = useHttpErrorHandler();
-
-  const { data, isPending, run } = useAsync({
-    deferFn: search,
-    initialValue: { results: props.results ?? [], totalCount: props.totalCount ?? 0 },
-    onReject: errorHandler,
-  });
-
-  const firstMount = useFirstMount();
-
-  useEffect(() => {
-    if (!firstMount) {
-      run(query);
-    }
-  }, [query]);
-
-  const { results } = data!;
+  const { results, totalCount } = props;
 
   const updateQuery = useCallback((newQuery: Partial<SearchQuery>) => {
     const combinedQuery = { ...query, ...newQuery };
     router.push({ pathname: "/search", query: combinedQuery });
-  }, [router, run, query]);
+  }, [router, query]);
 
   const searchText = queryToString(query?.searchText ?? "");
   const currentPage = queryToIntOrDefault(query.page, 1);
@@ -76,28 +60,25 @@ export const SearchPage: NextPage<Props> = (props) => {
       </Box>
       <Box direction="row" justify="center" flex="grow">
         <Box flex="grow" width={{ max: "large" }} >
-          <OverlayLoading loading={isPending}>
-            <Box gap="large">
-              {results.map((r) => (
-                <UserListItem
-                  key={r.username}
-                  user={r}
-                />
-              ))}
-            </Box>
-            <Box direction="row" justify="center">
-              <Pagination
-                currentPage={currentPage}
-                itemsPerPage={10}
-                totalItemsCount={data!.totalCount}
-                getUrl={(i) => ({
-                  pathname: "/search",
-                  query: { ...query, page: i },
-                })}
+          <Box gap="large">
+            {results.map((r) => (
+              <UserListItem
+                key={r.username}
+                user={r}
               />
-            </Box>
-          </OverlayLoading>
-
+            ))}
+          </Box>
+          <Box direction="row" justify="center">
+            <Pagination
+              currentPage={currentPage}
+              itemsPerPage={10}
+              totalItemsCount={totalCount}
+              getUrl={(i) => ({
+                pathname: "/search",
+                query: { ...query, page: i },
+              })}
+            />
+          </Box>
         </Box>
       </Box>
     </Box>
