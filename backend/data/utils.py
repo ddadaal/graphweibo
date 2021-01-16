@@ -1,3 +1,4 @@
+from typing import List, Tuple
 import data.GstoreConnector as GstoreConnector
 import sys
 import random
@@ -142,7 +143,7 @@ def isFollow(uid1, uid2):
     return False
 
 
-def getFollowers(uid):
+def getFollowers(uid, page):
     ans = []
     sparql = prefix+" select ?x where{?x vocab:userrelation_suid '%s'.}"%uid
     resp = json.loads(gc.query("weibo", "json", sparql))
@@ -164,7 +165,7 @@ def getFollowers(uid):
     
     return ans
 
-def getFollowings(uid):
+def getFollowings(uid, page):
     ans = []
     sparql = prefix+" select ?y ?x where{?y vocab:userrelation_tuid ?x.}"
     resp = json.loads(gc.query("weibo", "json", sparql))
@@ -195,16 +196,39 @@ def getNewWeibos():
         'results': []
     }
 
+def paginated_query(clause: str,  select: str, count_select: str, orderby: str, page: int) -> Tuple[List, int]:
+
+    sparql = prefix + " select (count(%s) as ?c) where {\
+        %s\
+    }" % (count_select, clause)
+
+    # 1. query the count
+    resp = json.loads(gc.query("weibo", "json", sparql))
+    count = int(resp["results"]["bindings"][0]["c"]["value"])
+
+    if count == 0:
+        return [], 0
+    
+    # 2. get the paginated result
+    sparql = prefix + " select %s where {\
+        %s\
+        }\
+        ORDER BY %s\
+        LIMIT %d \
+        OFFSET %d \
+        " % (select, clause, orderby, page_size, (page - 1) * page_size)
+    
+    return json.loads(gc.query("weibo", "json", sparql))["results"]["bindings"], count
+
+
 def searchUserByQuery(query, uid, page):
 
-    sparql = prefix+" select (count(?uid) as ?c) where{\
+    clause ="\
             ?uid vocab:user_name ?username \
             FILTER regex(?username, '.*%s.*').\
-            } \
-            "%(query)
-    resp = json.loads(gc.query("weibo", "json", sparql))
-    print(resp)
-    count = int(resp["results"]["bindings"][0]["c"]["value"])
+            "
+    resp, count = paginated_query(clause, "?uid", "?uid", "?uid", page)
+
     # NOTE 没有搜索到结果，在这个需求里不是错误，是预期情况，搜索本来就可以没有搜索结果，所以直接返回一个空数组就可以了。
     # 有的API（比如关注用户）默认传入的ID是有效的，只有这种默认存在、但是实际上不存在的意外情况才应该报错
     if count == 0:
@@ -213,15 +237,6 @@ def searchUserByQuery(query, uid, page):
             'totalCount': 0
         }
 
-    sparql = prefix+" select ?uid where{\
-            ?uid vocab:user_name ?username \
-            FILTER regex(?username, '.*%s.*').\
-            } \
-            ORDER BY (?uid) \
-            LIMIT %d \
-            OFFSET %d \
-            "%(query, page_size, (page - 1) * page_size)
-    resp = json.loads(gc.query("weibo","json", sparql))["results"]["bindings"]
     candidate_user = [data["uid"]["value"] for data in resp]
     
     user_list = []
@@ -279,7 +294,7 @@ def getFollowingsWeibo(uid):
         ans.append(getUserWeibo(elem["uid"]))
     return ans
 
-def getUserWeibo(uid):
+def getUserWeibo(uid, page):
     sparql = prefix+" select ?wbid ?username ?sendTime ?content where {\
             ?wbid vocab:weibo_uid '%s'.\
             ?wbid vocab:weibo_date ?sendTime.\
