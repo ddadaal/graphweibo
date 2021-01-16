@@ -72,7 +72,8 @@ def getAllFollowingsWeibo():
 def getNewWeibos_api():
     result = getNewWeibos()
     if result['state']:
-        return Response(json.dumps({'results': result['results']}), status=200, content_type='application/json')
+        r, count = result['result']
+        return Response(json.dumps({'results': r}), status=200, content_type='application/json')
     else:
         return Response(status=500)
 

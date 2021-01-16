@@ -191,14 +191,6 @@ def getFollowings(uid, myid, page):
         'result': (ans[(page-1) * page_size : page * page_size], len(ans))
     }
 
-
-# TODO
-def getNewWeibos():
-    return {
-        'state': True,
-        'results': []
-    }
-
 def paginated_query(clauses: List[str], select: str, count_select: str, orderby: str, page: int) -> Tuple[List, int]:
 
     clause = ".\n".join(clauses)
@@ -330,6 +322,38 @@ def getUserWeibo(uid, page):
         ans_elem["sendTime"] = data["sendTime"]["value"]
         ans_elem["content"] = data["content"]["value"]
         ans_elem["senderUsername"] = getProfile(uid)["username"]
+        ans.append(ans_elem)
+        # print(ans)
+
+    return {
+        'state': True,
+        'result': (ans, count)
+    }
+    
+def getNewWeibos(limit = 10):
+
+    clauses =[
+        "?wbid vocab:weibo_uid ?senderId",
+        "?wbid vocab:weibo_date ?sendTime",
+        "?wbid vocab:weibo_text ?content",
+    ]
+       
+    resp, count = paginated_query(
+        clauses,
+        "?wbid ?sendTime ?senderId ?content",
+        "?wbid",
+        "DESC(?sendTime)",
+        limit
+    )
+
+    ans = []
+    for data in resp:
+        ans_elem = {}
+        ans_elem["weiboId"] = data["wbid"]["value"][-16:]
+        ans_elem["senderId"] = data["senderId"]["value"]
+        ans_elem["sendTime"] = data["sendTime"]["value"]
+        ans_elem["content"] = data["content"]["value"]
+        ans_elem["senderUsername"] = getProfile(ans_elem["senderId"])["username"]
         ans.append(ans_elem)
         # print(ans)
 
