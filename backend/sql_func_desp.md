@@ -90,7 +90,8 @@ return:{
 ## def searchUserByQuery(querystr:string, uid:string, page int)
 搜索用户，查找和字符串最匹配的多个用户，返回他们的信息。每页10个。
 ```python
-return: list[
+return: {
+        results: list[
                 {username(string),
                 userId(string),
                 weiboCount(int): 微博数目,
@@ -98,7 +99,9 @@ return: list[
                 followCount (int): ta关注的人,
                 following(bool):我是否关注他,如果第二个参数为空字符串''，则为false true/false,
                 followed(bool):他是否关注我，如果第二个参数为空字符串，则为false true/false,
-        }]
+                }]
+        totalCount: int
+}
 ```
 
 ## def searchUserByID(queryid:string, uid:string)

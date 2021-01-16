@@ -1,5 +1,6 @@
 #coding:utf-8 
 #user 
+from main.utils import get_page
 from data.utils import follow, getFollowers, login, register, searchUserByQuery, unfollow
 from flask import Blueprint #, render_template, redirect 
 from flask import request, json, jsonify, Response
@@ -132,19 +133,20 @@ def search_api():
     # NOTE 下述方法不能获得GET请求的querystring。
     # data = json.loads(request.get_data())
     data = request.args
+    page = get_page(data)
 
     if 'userId' in data.keys():
         queryID = data['userId']
         result = searchUserByID(queryID,userID)
     else:
         querystr = data['query']
-        result = searchUserByQuery(querystr,userID)
+        result = searchUserByQuery(querystr, userID, page)
 
     # NOTE 没有搜索到结果，在这个需求里不是错误，是预期情况，搜索本来就可以没有搜索结果，所以直接返回一个空数组就可以了。
     # 有的API（比如关注用户）默认传入的ID是有效的，只有这种默认存在、但是实际上不存在的意外情况才应该报错
     # if result['state']:
     # result.pop('state')
-    return Response(json.dumps({ 'results': result}), status=200, content_type='application/json')
+    return Response(json.dumps(result), status=200, content_type='application/json')
     # else:
     #     return Response(status=404)
 

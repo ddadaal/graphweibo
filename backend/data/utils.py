@@ -13,6 +13,8 @@ prefix = "prefix vocab:   <file:///home/fxb/d2rq/vocab/> \
             prefix user:      <file:///home/fxb/d2rq/graph_dump.nt#user/> \
             prefix weibo:     <file:///home/fxb/d2rq/graph_dump.nt#weibo/>"
 
+page_size = 10
+
 gc = GstoreConnector.GstoreConnector(IP, Port, username, password)
 
 # res = gc.load("weibo", "POST")
@@ -193,17 +195,34 @@ def getNewWeibos():
         'results': []
     }
 
-def searchUserByQuery(query, uid):
+def searchUserByQuery(query, uid, page):
+
+    sparql = prefix+" select (count(?uid) as ?c) where{\
+            ?uid vocab:user_name ?username \
+            FILTER regex(?username, '.*%s.*').\
+            } \
+            "%(query)
+    resp = json.loads(gc.query("weibo", "json", sparql))
+    print(resp)
+    count = int(resp["results"]["bindings"][0]["c"]["value"])
+    # NOTE 没有搜索到结果，在这个需求里不是错误，是预期情况，搜索本来就可以没有搜索结果，所以直接返回一个空数组就可以了。
+    # 有的API（比如关注用户）默认传入的ID是有效的，只有这种默认存在、但是实际上不存在的意外情况才应该报错
+    if count == 0:
+        return {
+            'results': [],
+            'totalCount': 0
+        }
+
     sparql = prefix+" select ?uid where{\
             ?uid vocab:user_name ?username \
             FILTER regex(?username, '.*%s.*').\
-            }"%(query)
+            } \
+            ORDER BY (?uid) \
+            LIMIT %d \
+            OFFSET %d \
+            "%(query, page_size, (page - 1) * page_size)
     resp = json.loads(gc.query("weibo","json", sparql))["results"]["bindings"]
     candidate_user = [data["uid"]["value"] for data in resp]
-    # NOTE 没有搜索到结果，在这个需求里不是错误，是预期情况，搜索本来就可以没有搜索结果，所以直接返回一个空数组就可以了。
-    # 有的API（比如关注用户）默认传入的ID是有效的，只有这种默认存在、但是实际上不存在的意外情况才应该报错
-    if len(candidate_user)==0:
-        return []
     
     user_list = []
     for item in candidate_user:
@@ -224,7 +243,10 @@ def searchUserByQuery(query, uid):
         d["followed"] = isFollow(d["userId"], uid)
         d["following"] = isFollow(uid, d["userId"])
         user_list.append(d)
-    return user_list
+    return {
+        'totalCount': count,
+        'results': user_list,
+    }
 
 
 def postWeibo(uid, content):
