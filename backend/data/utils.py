@@ -201,12 +201,12 @@ def paginated_query(clauses: List[str], select: str, count_select: str, orderby:
     print(sparql)
 
     # 1. query the count
+    # if the request is too frequent, the query function returns ""
     resp = json.loads(gc.query("weibo", "json", sparql))
-    count = int(resp["results"]["bindings"][0]["c"]["value"])
-    print(resp)
-
-    if count == 0:
+    bindings = resp["results"]["bindings"]
+    if len(bindings) == 0:
         return [], 0
+    count = int(bindings[0]["c"]["value"])
     
     # 2. get the paginated result
     sparql = prefix + " select %s where {\
@@ -222,6 +222,13 @@ def paginated_query(clauses: List[str], select: str, count_select: str, orderby:
 
     return resp["results"]["bindings"], count
 
+def searchUserById(uid, myid):
+    d = getProfile(uid)
+    if not d:
+        return None
+    d["followed"] = isFollow(uid, myid)
+    d["following"] = isFollow(myid, uid)
+    return d
 
 def searchUserByQuery(query, uid, page):
 

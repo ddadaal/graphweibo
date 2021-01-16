@@ -116,7 +116,7 @@ return: {
                 followCount (int): ta关注的人,
                 following(bool):我是否关注他,如果第二个参数为空字符串''，则为false true/false,
                 followed(bool):他是否关注我，如果第二个参数为空字符串，则为false true/false,
-        }
+        } | None
         
 ```
 

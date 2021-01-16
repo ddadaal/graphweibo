@@ -1,7 +1,7 @@
 #coding:utf-8 
 #user 
 from main.utils import get_page
-from data.utils import follow, getFollowers, getFollowings, login, register, searchUserByQuery, unfollow
+from data.utils import follow, getFollowers, getFollowings, login, register, searchUserById, searchUserByQuery, unfollow
 from flask import Blueprint #, render_template, redirect 
 from flask import request, json, jsonify, Response
 from main.auths import *
@@ -151,7 +151,11 @@ def search_api():
 
     if 'userId' in data.keys():
         queryID = data['userId']
-        result = searchUserByID(queryID,userID)
+        result = searchUserById(queryID, userID)
+        result = {
+            'totalCount': 1 if result else 0,
+            'results': [result]
+        }
     else:
         querystr = data['query']
         result = searchUserByQuery(querystr, userID, page)
