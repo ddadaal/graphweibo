@@ -53,8 +53,8 @@ return: {
         }
 ```
 
-## def getFollowers(uid string)
-我的粉丝
+## def getFollowers(uid string, page int)
+我的粉丝。分页。每页10个。
 ```python
 return:{
         state:True/False
@@ -70,8 +70,8 @@ return:{
         }  
 ```
 
-## def getFollowings(uid:string)
-我关注的用户
+## def getFollowings(uid:string, page int)
+我关注的用户。分页。每页10个。
 ```python
 return:{
         state:True/False
@@ -87,8 +87,8 @@ return:{
         }  
 ```
 
-## def searchUserByQuery(querystr:string, uid:string)
-搜索用户，查找和字符串最匹配的多个用户，返回他们的信息
+## def searchUserByQuery(querystr:string, uid:string, page int)
+搜索用户，查找和字符串最匹配的多个用户，返回他们的信息。每页10个。
 ```python
 return: list[
                 {username(string),
@@ -104,15 +104,15 @@ return: list[
 ## def searchUserByID(queryid:string, uid:string)
 搜索用户，查找用户名对应的单个用户
 ```python
-return: list[
-                {username(string),
+return: {
+                username(string),
                 userId(string),
                 weiboCount(int): 微博数目,
                 followerCount (int): 关注ta的人,
                 followCount (int): ta关注的人,
                 following(bool):我是否关注他,如果第二个参数为空字符串''，则为false true/false,
                 followed(bool):他是否关注我，如果第二个参数为空字符串，则为false true/false,
-        }]
+        }
         
 ```
 
@@ -125,8 +125,8 @@ return:{
         }
 ```
 
-## def getFollowingsWeibo(uid:string)
-获取所有已关注人的微博
+## def getFollowingsWeibo(uid:string, page int)
+获取所有已关注人的微博。分页
 ```python
 return:{
         state:true/false
@@ -142,8 +142,8 @@ return:{
         }
 ```
 
-## def getUserWeibo(uid:string)
-获取某个特定用户的微博
+## def getUserWeibo(uid:string, page int)
+获取某个特定用户的微博。分页。
 ```python
 return:{
         state:true/false
