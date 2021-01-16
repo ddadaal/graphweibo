@@ -58,9 +58,8 @@ def login(uname, pwd):
     
     return ans
     
-    
 
-
+# TODO If user not exists, return None
 def getProfile(uid):
     ans = { "userId": uid }
     sparql = prefix+" select ?x where{ user:%s vocab:user_name ?x.}"%(uid)
@@ -78,10 +77,7 @@ def getProfile(uid):
     sparql = prefix+" select ?x where{ user:%s vocab:user_friendsnum ?x }"%(uid)
     ans["followingsCount"] = json.loads(gc.query("weibo","json", sparql))["results"]["bindings"][0]["x"]["value"]
     
-    return {
-        'state': True,
-        'result': ans,
-    }
+    return ans
 
 
 def follow(uid1, uid2):
@@ -137,17 +133,19 @@ def unfollow(uid1, uid2):
     ans["msg"] = "success"
     return ans
 
+userrelation_prefix = "file:///home/fxb/d2rq/graph_dump.nt#userrelation"
+
 def isFollow(uid1, uid2):
     # return true if uid1 follow uid2
     sparql_q_follow = prefix+ "select ?x where\
-            {<file:///home/fxb/d2rq/graph_dump.nt#userrelation/%s/%s> vocab:userrelation_tuid ?x}"%(uid1, uid2)
+            {<%s/%s/%s> vocab:userrelation_tuid ?x}"%(userrelation_prefix, uid1, uid2)
     resp = json.loads(gc.query("weibo", "json", sparql_q_follow))["results"]["bindings"]
     if len(resp)!=0:
         return True
     return False
 
 
-def getFollowers(uid, page):
+def getFollowers(uid, myid, page):
     ans = []
     sparql = prefix+" select ?x where{?x vocab:userrelation_suid '%s'.}"%uid
     resp = json.loads(gc.query("weibo", "json", sparql))
@@ -160,38 +158,36 @@ def getFollowers(uid, page):
         elem["weiboCount"] = tmp["weiboCount"]
         elem["followersCount"] = tmp["followersCount"]
         elem["followingsCount"] = tmp["followingsCount"]
-        if isFollow(uid, elem["uid"]):
-            elem["followings"] = True
-        else:
-            elem["followings"] = False
+        elem["following"] = myid and isFollow(myid, elem["uid"])
+        elem["followed"] = myid and isFollow(elem["uid"], myid)
         ans.append(elem)
         print(elem)
     
     return ans
 
-def getFollowings(uid, page):
+def getFollowings(uid, myid, page):
     ans = []
-    sparql = prefix+" select ?y ?x where{?y vocab:userrelation_tuid ?x.}"
+    sparql = prefix+" select ?x where{'%s' vocab:userrelation_suid ?x.}"%uid
     resp = json.loads(gc.query("weibo", "json", sparql))
-    
+
     for data in resp['results']['bindings']:
         elem = {}
-        elem["uid"] = data['y']['value'][-10:]
+        elem["uid"] = data['x']['value'][-10:]
         tmp = getProfile(elem["uid"])
         elem["username"] = tmp["username"]
         elem["weiboCount"] = tmp["weiboCount"]
         elem["followersCount"] = tmp["followersCount"]
         elem["followingsCount"] = tmp["followingsCount"]
-        if isFollow(uid, elem["uid"]):
-            elem["followings"] = True
-        else:
-            elem["followings"] = False
+        elem["following"] = myid and isFollow(myid, elem["uid"])
+        elem["followed"] = myid and isFollow(elem["uid"], myid)
         ans.append(elem)
         print(elem)
+    
     return {
         'state': True,
-        'results': ans
+        'result': (ans, len(ans)),
     }
+
 
 # TODO
 def getNewWeibos():
@@ -200,11 +196,14 @@ def getNewWeibos():
         'results': []
     }
 
-def paginated_query(clause: str, select: str, count_select: str, orderby: str, page: int) -> Tuple[List, int]:
+def paginated_query(clauses: List[str], select: str, count_select: str, orderby: str, page: int) -> Tuple[List, int]:
+
+    clause = ".\n".join(clauses)
 
     sparql = prefix + " select (count(%s) as ?c) where {\
         %s\
     }" % (count_select, clause)
+    print(sparql)
 
     # 1. query the count
     resp = json.loads(gc.query("weibo", "json", sparql))
@@ -231,10 +230,10 @@ def paginated_query(clause: str, select: str, count_select: str, orderby: str, p
 
 def searchUserByQuery(query, uid, page):
 
-    clause ="\
-            ?uid vocab:user_name ?username \
-            FILTER regex(?username, '.*%s.*').\
-            " % (query)
+    clause = [
+        "?uid vocab:user_name ?username",
+        "FILTER regex(?username, '.*%s.*')" % query,
+    ]
     resp, count = paginated_query(clause, "?uid", "?uid", "?uid", page)
 
     # NOTE 没有搜索到结果，在这个需求里不是错误，是预期情况，搜索本来就可以没有搜索结果，所以直接返回一个空数组就可以了。
@@ -306,13 +305,14 @@ def getUserWeibo(uid, page):
 
     # TODO check user existence
 
-    clause = "\
-            ?wbid vocab:weibo_uid '%s'.\
-            ?wbid vocab:weibo_date ?sendTime.\
-            ?wbid vocab:weibo_text ?content.\
-            " % (uid)
-        
-    resp, count = paginated_query(clause, 
+    clauses =[
+        "?wbid vocab:weibo_uid '%s'" % uid,
+        "?wbid vocab:weibo_date ?sendTime",
+        "?wbid vocab:weibo_text ?content",
+    ]
+       
+    resp, count = paginated_query(
+        clauses,
         "?wbid ?sendTime ?content",
         "?wbid",
         "DESC(?sendTime)",
@@ -326,7 +326,7 @@ def getUserWeibo(uid, page):
         ans_elem["senderId"] = uid
         ans_elem["sendTime"] = data["sendTime"]["value"]
         ans_elem["content"] = data["content"]["value"]
-        ans_elem["senderUsername"] = getProfile(uid)['result']["username"]
+        ans_elem["senderUsername"] = getProfile(uid)["username"]
         ans.append(ans_elem)
         # print(ans)
 

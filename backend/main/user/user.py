@@ -1,7 +1,7 @@
 #coding:utf-8 
 #user 
 from main.utils import get_page
-from data.utils import follow, getFollowers, login, register, searchUserByQuery, unfollow
+from data.utils import follow, getFollowers, getFollowings, login, register, searchUserByQuery, unfollow
 from flask import Blueprint #, render_template, redirect 
 from flask import request, json, jsonify, Response
 from main.auths import *
@@ -93,30 +93,44 @@ def get_followers_api():
 
     # NOTE 注意大小写，之前是userID
     userID = data['userId']
+    page = get_page(data)
+
+    identity = identify(request)
+    myid = identity['msg'] if identity['state'] else None
 
     # TODO
     # 获取当前用户所有粉丝
-    result = getFollowers(userID)
+    result = getFollowers(userID, myid, page)
 
     if result['state']:
-        result.pop('state')
-        return Response(json.dumps(result), status=200, content_type='application/json')
+        result, count = result['result']
+        return Response(json.dumps({
+            'followers': result,
+            'totalCount': count,
+        }), status=200, content_type='application/json')
     else:
         return Response(status=404)
 
 # 获取关注者
 @user.route('/followings', methods=['GET'])
-def getFollowings():
-    data = json.loads(request.get_data())
+def getFollowings_api():
+    data = request.args
     userID = data['userId']
+    page = get_page(data)
+
+    identity = identify(request)
+    myid = identity['msg'] if identity['state'] else None
 
     # TODO
     # 获取当前用户所有关注者
-    result = getFollowings(userID)
+    result = getFollowings(userID, myid, page)
 
     if result['state']:
-        result.pop('state')
-        return Response(json.dumps(result), status=200, content_type='application/json')
+        result, count = result['result']
+        return Response(json.dumps({
+            'followings': result,
+            'totalCount': count,
+        }), status=200, content_type='application/json')
     else:
         return Response(status=404)
 

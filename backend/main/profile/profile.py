@@ -22,9 +22,9 @@ def getAccountProfile():
     # 通过用户ID获取用户的所有信息，返回用户数据
     result = getProfile(data['userId'])
 
-    if result['state']:
+    if result:
         return Response(json.dumps({
-            'profile': result['result']
+            'profile': result
         }), status=200, content_type='application/json')
     else:
         return Response(status=404)

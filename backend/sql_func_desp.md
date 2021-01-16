@@ -53,12 +53,12 @@ return: {
         }
 ```
 
-## def getFollowers(uid string, page int)
-我的粉丝。分页。每页10个。
+## def getFollowers(uid string, myid: string | None, page int)
+uid的粉丝。分页。每页10个。
 ```python
 return:{
         state:True/False
-        followers:list[
+        result:tuple(list[
                 {username(string),
                 userId(string),
                 weiboCount(int): 微博数目,
@@ -66,16 +66,17 @@ return:{
                 followCount (int): ta关注的人,
                 following(bool):我是否关注他 true/false,
                 followed(bool):他是否关注我 true/false
-        }]
-        }  
+        }], int)
+        } 
 ```
 
-## def getFollowings(uid:string, page int)
-我关注的用户。分页。每页10个。
+## def getFollowings(uid:string, myid: string | None, page int)
+uid关注的用户。分页。每页10个。
 ```python
 return:{
         state:True/False
-        followings:list[
+        result:tuple(
+                list[
                 {username(string),
                 userId(string),
                 weiboCount(int): 微博数目,
@@ -83,7 +84,7 @@ return:{
                 followCount (int): ta关注的人,
                 following(bool):我是否关注他 true/false,
                 followed(bool):他是否关注我 true/false,
-        }]
+        }], int)
         }  
 ```
 
