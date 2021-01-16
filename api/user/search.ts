@@ -49,14 +49,21 @@ export interface SearchUserSchema {
   querystring: {
     /** 查询字符串 */
     query: string;
+    /**
+     * 页数。每页10项，从1开始，不设置的话，默认值为1
+     * @default 1
+     */
+    page?: number;
   } | {
     /** 用户ID */
     userId: string;
   };
   responses: {
     200: {
+      /** 总数，如果传入的是ID，那么总数最多为1。 */
+      totalCount: number;
       /**
-       * 查询结果
+       * 对应页数的查询结果
        */
       results: UserResult[];
     }

@@ -26,12 +26,18 @@ export interface WeiboResult {
 /**
  * 返回自己已经关注的人的微博。
  * 应该按时间倒序排列
- * 把所有数据直接返回吧，简单一点
- * 要改以后再改
  */
 export interface WeiboGetFollowingsSchema {
+  querystring: {
+    /**
+     * 页数。每页10项，从1开始，不设置的话，默认值为1
+     * @default 1
+     */
+    page?: number;
+  }
   responses: {
     200: {
+      totalCount: number;
       results: WeiboResult[];
     }
   }
