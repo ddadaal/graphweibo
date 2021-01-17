@@ -194,7 +194,7 @@ def getFollowings(uid, myid, page):
 def query(sparql: str):
     return json.loads(gc.query("weibo", "json", sparql))
 
-def paginated_query(clauses: List[str], select: str, count_select: str, orderby: str, page: int, query_count = False) -> Tuple[List, int]:
+def paginated_query(clauses: List[str], select: str, count_select: str, orderby: str, page: int, query_count = True) -> Tuple[List, int]:
 
     clause = ".\n".join(clauses)
     count = 0
@@ -344,15 +344,13 @@ def getFollowingsWeibo(uid):
     
 def getNewWeibos(page):
 
-    resp = query()
-
     clauses =[
         "?wbid vocab:weibo_uid ?senderId",
         "?wbid vocab:weibo_date ?sendTime",
         "?wbid vocab:weibo_text ?content",
     ]
        
-    resp = paginated_query(
+    resp, _ = paginated_query(
         clauses,
         "?wbid ?sendTime ?senderId ?content",
         "?wbid",

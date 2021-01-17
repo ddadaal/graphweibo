@@ -50,10 +50,11 @@ const Home: NextPage<Props> = (props) => {
       <Box gap="large">
         <InfiniteScroll items={items} onMore={onMore}>
           {(r: WeiboResult) => (
-            <WeiboListItem
-              key={r.weiboId}
-              weibo={r}
-            />
+            <Box key={r.weiboId} margin={{ vertical: "small" }}>
+              <WeiboListItem
+                weibo={r}
+              />
+            </Box>
           )}
         </InfiniteScroll>
       </Box>
