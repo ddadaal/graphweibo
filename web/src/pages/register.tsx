@@ -42,7 +42,7 @@ const RegisterForm: React.FC = () => {
         remember: remember,
       });
     } catch (e) {
-      if (e.status === 405) {
+      if (e.status === 409) {
         toast.error(
           <LocalizedString id={root.error.conflict} />
         );
