@@ -37,7 +37,10 @@ const NumberInfo: React.FC<NumberInfoProps> = (props) => {
         <LocalizedString id={props.textId} />
       </Box>
       <Box>
-        <AnchorLink href={{ pathname: props.pathname, query: { userId: props.userId } }}>
+        <AnchorLink
+          href={{ pathname: props.pathname, query: { userId: props.userId } }}
+          as={props.pathname.replace("[userId]", props.userId)}
+        >
           {props.value}
         </AnchorLink>
       </Box>
@@ -78,6 +81,7 @@ export const UserListItem: React.FC<Props> = ({
             pathname: "/profile/[userId]",
             query: { userId: user.userId },
           }}
+          as={`/profile/${user.userId}`}
           >
             {user.username}
           </AnchorLink>
@@ -88,6 +92,7 @@ export const UserListItem: React.FC<Props> = ({
               pathname: "/profile/[userId]",
               query: { userId: user.userId },
             }}
+            as={`/profile/${user.userId}`}
             >
               {user.weiboCount}
             </AnchorLink>
@@ -97,13 +102,13 @@ export const UserListItem: React.FC<Props> = ({
       <Box direction="row" gap="small">
         <NumberInfo
           textId={root.fans}
-          value={user.followerCount}
+          value={user.followersCount}
           userId={user.userId}
           pathname="/profile/[userId]/followers"
         />
         <NumberInfo
           textId={root.following}
-          value={user.followCount}
+          value={user.followingsCount}
           userId={user.userId}
           pathname="/profile/[userId]/followings"
         />

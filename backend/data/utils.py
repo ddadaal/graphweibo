@@ -164,14 +164,15 @@ def getFollowers(uid, myid, page):
 
     for data in resp['results']['bindings']:
         elem = {}
-        elem["uid"] = data['x']['value'][-10:]
-        tmp = getProfile(elem["uid"])
+        uid = data['x']['value'][-10:]
+        elem["userId"] = uid
+        tmp = getProfile(uid)
         elem["username"] = tmp["username"]
         elem["weiboCount"] = tmp["weiboCount"]
         elem["followersCount"] = tmp["followersCount"]
         elem["followingsCount"] = tmp["followingsCount"]
-        elem["following"] = myid and isFollow(myid, elem["uid"])
-        elem["followed"] = myid and isFollow(elem["uid"], myid)
+        elem["following"] = myid and isFollow(myid, uid)
+        elem["followed"] = myid and isFollow(uid, myid)
         ans.append(elem)
         # print(elem)
     
@@ -195,14 +196,15 @@ def getFollowings(uid, myid, page):
     for data in resp['results']['bindings']:
         
         elem = {}
-        elem["uid"] = data['x']['value'][-10:]
-        tmp = getProfile(elem["uid"])
+        uid = data['x']['value'][-10:]
+        elem["userId"] = uid
+        tmp = getProfile(uid)
         elem["username"] = tmp["username"]
         elem["weiboCount"] = tmp["weiboCount"]
         elem["followersCount"] = tmp["followersCount"]
         elem["followingsCount"] = tmp["followingsCount"]
-        elem["following"] = myid and isFollow(myid, elem["uid"])
-        elem["followed"] = myid and isFollow(elem["uid"], myid)
+        elem["following"] = myid and isFollow(myid, uid)
+        elem["followed"] = myid and isFollow(uid, myid)
         ans.append(elem)
         # print(elem)
     

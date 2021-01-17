@@ -16,12 +16,12 @@ export interface UserResult {
   /**
    * 关注的人数
    */
-  followCount: number;
+  followingsCount: number;
 
   /**
    * 被关注的人数
    */
-  followerCount: number;
+  followersCount: number;
 
   /**
    * 我关注了这个用户了吗？
