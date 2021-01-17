@@ -24,7 +24,7 @@ def register_api():
 
     if(result['state']): 
         token = encodeToken(result['userId'])
-        return Response(json.dumps({'userId': result['userId'], 'token': str(token)}), status=201, content_type='application/json')
+        return Response(json.dumps({'userId': result['userId'], 'token': token}), status=201, content_type='application/json')
         # return jsonify({'usrID': userID, 'token': str(token)})
     else:
         return Response(status=409)

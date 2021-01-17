@@ -60,7 +60,7 @@ def getAllFollowingsWeibo():
         return Response(status=401)
     # TODO
     # 找所有已关注人的微博
-    result = getFollowingsWeibo(userID)
+    result = getFollowingsWeibo(userID, get_page(request.args))
 
     if result['state']:
         return Response(json.dumps({'results': result['results']}), status=200, content_type='application/json')

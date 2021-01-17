@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 import data.GstoreConnector as GstoreConnector
 import sys
 import random
@@ -65,7 +65,7 @@ def login(uname, pwd):
         ans["uid"] = ""
     else:
         ans["state"] = True
-        ans["uid"] = resp[0]["uid"]
+        ans["uid"] = resp[0]["uid"]["value"][-10:]
         print(ans)
     
     return ans
@@ -180,12 +180,20 @@ def getFollowers(uid, myid, page):
         'result': (ans[(page-1) * page_size : page * page_size], len(ans))
     }
 
+def _get_following_user_ids(uid):
+    sparql = prefix+" select ?x where{'%s' vocab:userrelation_suid ?x.}"%uid
+    resp = query(sparql)
+    print(resp)
+    return [data['x']['value'][-10:] for data in resp['results']['bindings']]
+
+
 def getFollowings(uid, myid, page):
     ans = []
     sparql = prefix+" select ?x where{'%s' vocab:userrelation_suid ?x.}"%uid
     resp = json.loads(gc.query("weibo", "json", sparql))
 
     for data in resp['results']['bindings']:
+        
         elem = {}
         elem["uid"] = data['x']['value'][-10:]
         tmp = getProfile(elem["uid"])
@@ -344,12 +352,15 @@ def getUserWeibo(uid, page):
         'result': (ans, count),
     }
 
-def getFollowingsWeibo(uid):
+def getFollowingsWeibo(uid, page):
     ans = []
-    following_list = getFollowings(uid)
+    following_list = _get_following_user_ids(uid)
     for elem in following_list:
         ans.append(getUserWeibo(elem["uid"]))
-    return ans
+    return {
+        'state': True,
+        'results': ans[(page-1)*page_size:page*page_size]
+    }
 
     
 def getNewWeibos(page):
