@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Anchor, Box, InfiniteScroll, Paragraph } from "grommet";
 import { WeiboInput } from "src/components/WeiboInput";
 import { NextPage } from "next";
@@ -50,8 +50,7 @@ const Home: NextPage<Props> = (props) => {
     setItems((items) => [...items, ...newWeibos.results ]);
   });
 
-  // reload when user changes
-  useEffect(() => {
+  const reload = useCallback(() => {
     request(async () => {
       const weibos = await load(userStore.user);
       page.current = 1;
@@ -59,10 +58,15 @@ const Home: NextPage<Props> = (props) => {
     });
   }, [userStore.user]);
 
+  // reload when user changes
+  useEffect(() => {
+    reload();
+  }, [reload]);
+
   return (
     <Box fill gap="large" alignSelf="center" width={{ max: "large" }}>
       <Box>
-        <WeiboInput />
+        <WeiboInput onSubmitCompleted={reload}/>
       </Box>
       <Box gap="large">
         <InfiniteScroll items={items}>

@@ -1,3 +1,4 @@
+from main import weibo
 from typing import List, Optional, Tuple
 import data.GstoreConnector as GstoreConnector
 import sys
@@ -192,6 +193,7 @@ def unfollow(uid1, uid2):
         }}
     """ 
     resp = query(sparql)
+    resp = gc.checkpoint("weibo")
     
     return {
         'state': True,
@@ -369,24 +371,45 @@ def postWeibo(uid, content):
     # generate 16bit mid for weibotext
     mid = ''.join(str(random.choice(range(10))) for _ in range(16))
     isotime = datetime.datetime.now().replace(microsecond=0).isoformat()
-    sparql = prefix+" insert DATA{\
-            <file:///home/fxb/d2rq/graph_dump.nt#weibo/%s> vocab:weibo_date %s.\
-            <file:///home/fxb/d2rq/graph_dump.nt#weibo/%s> vocab:weibo_text %s.\
-            <file:///home/fxb/d2rq/graph_dump.nt#weibo/%s> vocab:weibo_source %s.\
-            <file:///home/fxb/d2rq/graph_dump.nt#weibo/%s> vocab:weibo_repostsnum %s.\
-            <file:///home/fxb/d2rq/graph_dump.nt#weibo/%s> vocab:weibo_commentsnum %s.\
-            <file:///home/fxb/d2rq/graph_dump.nt#weibo/%s> vocab:weibo_attitudesnum %s.\
-            <file:///home/fxb/d2rq/graph_dump.nt#weibo/%s> vocab:weibo_uid '%s'.\
-            }"%(mid, isotime, mid, content,mid," ",mid,"0",mid,"0",mid,"0",mid, uid)
+
+    # insert the weibo
+    sparql = prefix + f"""
+            insert data {{
+                weibo:{mid} vocab:weibo_date '{isotime}';
+                            vocab:weibo_text '{content}';
+                            vocab:weibo_source '';
+                            vocab:weibo_repostsnum '0'^^xsd:integer;
+                            vocab:weibo_commentsnum '0'^^xsd:integer;
+                            vocab:weibo_attitudesnum '0'^^xsd:integer;
+                            vocab:weibo_uid '{uid}'.
+            }}"""
     
-    resp = json.loads(gc.query("weibo","json", sparql))
-    
+    print(sparql)
+    resp = query(sparql)
+    print(resp)
+    print(mid)
+
+    # update the profile
+    weibonum = getProfile(uid)["weiboCount"]
+
+    sparql = prefix + f"""
+        DELETE {{
+            user:{uid} vocab:user_statusesnum "{weibonum}"^^xsd:integer .
+        }}
+        INSERT {{
+            user:{uid} vocab:user_statusesnum "{weibonum + 1}"^^xsd:integer .
+        }}
+        WHERE {{
+            user:{uid} vocab:user_statusesnum "{weibonum}"^^xsd:integer .
+        }}
+    """ 
+    resp = query(sparql)
     resp = gc.checkpoint("weibo")
     
-    ans = {}    
-    ans["state"] = True
-    ans["msg"] = "success"
-    return ans
+    return {
+        'state': True,
+        'msg': "success"
+    }
 
 def getUserWeibo(uid, page):
 
@@ -426,6 +449,8 @@ def getFollowingsWeibo(uid, page):
 
     # Two queries. maybe able to merge into one query
     following_list = _get_following_user_ids(uid)
+    # append the user itself into the list
+    following_list.append(uid)
 
     resp, count = paginated_query(
         [
