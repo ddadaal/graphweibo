@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Anchor, Box, InfiniteScroll, Paragraph } from "grommet";
 import { WeiboInput } from "src/components/WeiboInput";
 import { NextPage } from "next";
@@ -9,7 +9,7 @@ import { HttpError } from "src/apis/fetch";
 import { UnifiedErrorPage } from "src/components/errors/UnifiedErrorPage";
 import { WeiboListItem } from "src/components/WeiboListItem";
 import { WeiboResult } from "graphweibo-api/weibo/getFollowings";
-import { getCurrentUserInCookie, UserStore } from "src/stores/UserStore";
+import { getCurrentUserInCookie, User, UserStore } from "src/stores/UserStore";
 import { useStore } from "simstate";
 import { useHttpRequest } from "src/utils/http";
 import { LocalizedString } from "simstate-i18n";
@@ -23,6 +23,12 @@ type Props = SSRPageProps<{
   results: WeiboResult[];
 }>;
 
+function load(user: User | null, page = 1) {
+  return user
+    ? api.getFollowings({ query: { page } })
+    : api.getNewWeibos({ query: { page } });
+
+}
 
 const Home: NextPage<Props> = (props) => {
   if ("error" in props) {
@@ -39,12 +45,19 @@ const Home: NextPage<Props> = (props) => {
 
   const onMore = () => request(async () => {
     const newPage = page.current + 1;
-    const newWeibos = userStore.user
-      ? await api.getFollowings({ query: { page: newPage } })
-      : await api.getNewWeibos({ query: { page: newPage } });
+    const newWeibos = await load(userStore.user, newPage);
     page.current = newPage;
     setItems((items) => [...items, ...newWeibos.results ]);
   });
+
+  // reload when user changes
+  useEffect(() => {
+    request(async () => {
+      const weibos = await load(userStore.user);
+      page.current = 1;
+      setItems(weibos.results);
+    });
+  }, [userStore.user]);
 
   return (
     <Box fill gap="large" alignSelf="center" width={{ max: "large" }}>
@@ -74,9 +87,7 @@ const Home: NextPage<Props> = (props) => {
 Home.getInitialProps = async (ctx) => {
   const user = getCurrentUserInCookie(ctx);
 
-  const data = await (
-    user ? api.getFollowings({ query: {} }) : api.getNewWeibos({ query: {} })
-  )
+  const data = await load(user)
     .catch((r: HttpError) => ({ error: r }));
 
   return data;
