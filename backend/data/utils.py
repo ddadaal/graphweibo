@@ -423,13 +423,39 @@ def getUserWeibo(uid, page):
     }
 
 def getFollowingsWeibo(uid, page):
-    ans = []
+
+    # Two queries. maybe able to merge into one query
     following_list = _get_following_user_ids(uid)
-    for elem in following_list:
-        ans.append(getUserWeibo(elem["uid"]))
+
+    resp, count = paginated_query(
+        [
+            "?wbid vocab:weibo_uid ?uid",
+            "?wbid vocab:weibo_date ?sendTime",
+            "?wbid vocab:weibo_text ?content",
+            f"""FILTER (?uid in ({', '.join((f"'{i}'" for i in following_list))})"""
+        ],
+        "?wbid ?sendTime ?content ?uid",
+        "?wbid",
+        "DESC(?sendTime)",
+        page,
+        query_count=False
+    )
+
+    ans = []
+    for data in resp:
+        ans_elem = {}
+        ans_elem["weiboId"] = data["wbid"]["value"][-16:]
+        sender_id = data["uid"]["value"]
+        ans_elem["senderId"] = sender_id
+        ans_elem["sendTime"] = data["sendTime"]["value"]
+        ans_elem["content"] = data["content"]["value"]
+        ans_elem["senderUsername"] = getProfile(sender_id)["username"]
+        ans.append(ans_elem)
+        # print(ans)
+
     return {
         'state': True,
-        'results': ans[(page-1)*page_size:page*page_size]
+        'results': ans,
     }
 
     
