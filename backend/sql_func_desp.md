@@ -62,8 +62,8 @@ return:{
                 {username(string),
                 userId(string),
                 weiboCount(int): 微博数目,
-                followerCount (int): 关注ta的人,
-                followCount (int): ta关注的人,
+                followersCount (int): 关注ta的人,
+                followingsCount (int): ta关注的人,
                 following(bool):我是否关注他 true/false,
                 followed(bool):他是否关注我 true/false
         }], int)
@@ -80,8 +80,8 @@ return:{
                 {username(string),
                 userId(string),
                 weiboCount(int): 微博数目,
-                followerCount (int): 关注ta的人,
-                followCount (int): ta关注的人,
+                followersCount (int): 关注ta的人,
+                followingsCount (int): ta关注的人,
                 following(bool):我是否关注他 true/false,
                 followed(bool):他是否关注我 true/false,
         }], int)
@@ -96,8 +96,8 @@ return: {
                 {username(string),
                 userId(string),
                 weiboCount(int): 微博数目,
-                followerCount (int): 关注ta的人,
-                followCount (int): ta关注的人,
+                followersCount (int): 关注ta的人,
+                followingsCount (int): ta关注的人,
                 following(bool):我是否关注他,如果第二个参数为空字符串''，则为false true/false,
                 followed(bool):他是否关注我，如果第二个参数为空字符串，则为false true/false,
                 }]
@@ -112,8 +112,8 @@ return: {
                 username(string),
                 userId(string),
                 weiboCount(int): 微博数目,
-                followerCount (int): 关注ta的人,
-                followCount (int): ta关注的人,
+                followersCount (int): 关注ta的人,
+                followingsCount (int): ta关注的人,
                 following(bool):我是否关注他,如果第二个参数为空字符串''，则为false true/false,
                 followed(bool):他是否关注我，如果第二个参数为空字符串，则为false true/false,
         } | None

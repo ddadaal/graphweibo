@@ -286,18 +286,18 @@ def searchUserByQuery(query, uid, page):
     for item in candidate_user:
         d = {}
         d["userId"] = item[-10:]
-        sparql = prefix+" select ?username ?weiboCount ?followerCount ?followCount where{\
+        sparql = prefix+" select ?username ?weiboCount ?followersCount ?followingsCount where{\
                 <%s> vocab:user_name ?username.\
                 <%s> vocab:user_statusesnum ?weiboCount.\
-                <%s> vocab:user_followersnum ?followerCount.\
-                <%s> vocab:user_friendsnum ?followCount.\
+                <%s> vocab:user_followersnum ?followersCount.\
+                <%s> vocab:user_friendsnum ?followingsCount.\
                 }"%(item, item, item, item)
         
         resp = json.loads(gc.query("weibo","json", sparql))["results"]["bindings"][0]
         d["username"] = resp["username"]["value"]
         d["weiboCount"] = resp["weiboCount"]["value"]
-        d["followerCount"] = resp["followerCount"]["value"]
-        d["followCount"] = resp["followCount"]["value"]
+        d["followersCount"] = resp["followersCount"]["value"]
+        d["followingsCount"] = resp["followingsCount"]["value"]
         d["followed"] = isFollow(d["userId"], uid)
         d["following"] = isFollow(uid, d["userId"])
         user_list.append(d)
