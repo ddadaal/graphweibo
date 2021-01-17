@@ -70,9 +70,11 @@ def getAllFollowingsWeibo():
 # 获得系统中最新的10条微博
 @weibo.route("/new", methods=['GET'])
 def getNewWeibos_api():
-    result = getNewWeibos()
+    page = get_page(request.args)
+    result = getNewWeibos(page)
+
     if result['state']:
-        r, count = result['result']
+        r = result['result']
         return Response(json.dumps({'results': r}), status=200, content_type='application/json')
     else:
         return Response(status=500)

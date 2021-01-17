@@ -191,22 +191,26 @@ def getFollowings(uid, myid, page):
         'result': (ans[(page-1) * page_size : page * page_size], len(ans))
     }
 
-def paginated_query(clauses: List[str], select: str, count_select: str, orderby: str, page: int) -> Tuple[List, int]:
+def query(sparql: str):
+    return json.loads(gc.query("weibo", "json", sparql))
+
+def paginated_query(clauses: List[str], select: str, count_select: str, orderby: str, page: int, query_count = False) -> Tuple[List, int]:
 
     clause = ".\n".join(clauses)
-
-    sparql = prefix + " select (count(%s) as ?c) where {\
-        %s\
-    }" % (count_select, clause)
-    print(sparql)
+    count = 0
 
     # 1. query the count
-    # if the request is too frequent, the query function returns ""
-    resp = json.loads(gc.query("weibo", "json", sparql))
-    bindings = resp["results"]["bindings"]
-    if len(bindings) == 0:
-        return [], 0
-    count = int(bindings[0]["c"]["value"])
+    if query_count:
+        sparql = prefix + " select (count(%s) as ?c) where {\
+            %s\
+        }" % (count_select, clause)
+
+        # if the request is too frequent, the query function returns ""
+        resp = query(sparql)
+        bindings = resp["results"]["bindings"]
+        if len(bindings) == 0:
+            return [], 0
+        count = int(bindings[0]["c"]["value"])
     
     # 2. get the paginated result
     sparql = prefix + " select %s where {\
@@ -217,7 +221,7 @@ def paginated_query(clauses: List[str], select: str, count_select: str, orderby:
         OFFSET %d \
         " % (select, clause, orderby, page_size, (page - 1) * page_size)
     
-    resp = json.loads(gc.query("weibo", "json", sparql))
+    resp = query(sparql)
     print(resp)
 
     return resp["results"]["bindings"], count
@@ -296,13 +300,6 @@ def postWeibo(uid, content):
     ans["msg"] = "success"
     return ans
 
-def getFollowingsWeibo(uid):
-    ans = {}
-    following_list = getFollowings(uid)
-    for elem in following_list:
-        ans.append(getUserWeibo(elem["uid"]))
-    return ans
-
 def getUserWeibo(uid, page):
 
     # TODO check user existence
@@ -318,7 +315,7 @@ def getUserWeibo(uid, page):
         "?wbid ?sendTime ?content",
         "?wbid",
         "DESC(?sendTime)",
-        page
+        page,
     )
 
     ans = []
@@ -334,10 +331,20 @@ def getUserWeibo(uid, page):
 
     return {
         'state': True,
-        'result': (ans, count)
+        'result': (ans, count),
     }
+
+def getFollowingsWeibo(uid):
+    ans = []
+    following_list = getFollowings(uid)
+    for elem in following_list:
+        ans.append(getUserWeibo(elem["uid"]))
+    return ans
+
     
-def getNewWeibos(limit = 10):
+def getNewWeibos(page):
+
+    resp = query()
 
     clauses =[
         "?wbid vocab:weibo_uid ?senderId",
@@ -345,12 +352,13 @@ def getNewWeibos(limit = 10):
         "?wbid vocab:weibo_text ?content",
     ]
        
-    resp, count = paginated_query(
+    resp = paginated_query(
         clauses,
         "?wbid ?sendTime ?senderId ?content",
         "?wbid",
         "DESC(?sendTime)",
-        limit
+        page,
+        query_count=False,
     )
 
     ans = []
@@ -362,11 +370,10 @@ def getNewWeibos(limit = 10):
         ans_elem["content"] = data["content"]["value"]
         ans_elem["senderUsername"] = getProfile(ans_elem["senderId"])["username"]
         ans.append(ans_elem)
-        # print(ans)
 
     return {
         'state': True,
-        'result': (ans, count)
+        'result': ans,
     }
 
 if __name__ == "__main__":

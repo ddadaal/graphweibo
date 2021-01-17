@@ -37,7 +37,6 @@ export interface WeiboGetFollowingsSchema {
   }
   responses: {
     200: {
-      totalCount: number;
       results: WeiboResult[];
     }
   }

@@ -130,7 +130,7 @@ return:{
 ```
 
 ## def getFollowingsWeibo(uid:string, page int)
-获取所有已关注人的微博。分页
+获取所有已关注人的微博。分页。不需要返回总数。
 ```python
 return:{
         state:true/false
@@ -199,8 +199,8 @@ return:{
 ```
 
 
-## def getNewWeibos()
-获得系统中最新的10条微博
+## def getNewWeibos(page: int)
+获得系统中最新的微博。分页。不需要返回总数。
 ```python
 return: list[
                 {
