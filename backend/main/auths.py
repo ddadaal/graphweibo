@@ -3,22 +3,19 @@ from datetime import datetime, timedelta
 
 screct_key = "secret"
 
-def encodeToken(userID):
+def encodeToken(userID) -> str:
     """
     生成认证Token
     :param user_id: int
     :return: string
     """
-    try:
-        payload = {
-            'user_id': userID,
-            'exp': datetime.utcnow() + timedelta(seconds=600)
-        }
-        return jwt.encode(payload, key=screct_key, algorithm='HS256')
-    except Exception as e:
-        return e
+    payload = {
+        'user_id': userID,
+        'exp': datetime.utcnow() + timedelta(seconds=600)
+    }
+    return jwt.encode(payload, key=screct_key, algorithm='HS256').decode()
 
-def decodeToken(token):
+def decodeToken(token: str):
     """
     验证Token
     :param token:
@@ -45,7 +42,7 @@ def identify(request):
     auth_header = request.headers.get('Authorization')
     if (auth_header):
         auth_tokenArr = auth_header.split(" ")
-        if (not auth_tokenArr or auth_tokenArr[0] != 'JWT' or len(auth_tokenArr) != 2):
+        if (not auth_tokenArr or auth_tokenArr[0] != 'Bearer' or len(auth_tokenArr) != 2):
             result = {'state': False, 'msg': '请传递正确的验证头信息' }
         else:
             auth_token = auth_tokenArr[1]

@@ -34,14 +34,17 @@ def register(uname, pwd, register_time):
 
     uid = ''.join(str(random.choice(range(10))) for _ in range(10))
     ans ={}
-    sparql = prefix+" insert DATA{\
-            user:%s vocab:user_pwd %s.\
-            user:%s vocab:user_created_at %s.\
-            user:%s vocab:user_statusesnum 0.\
-            user:%s vocab:user_followersnum 0.\
-            user:%s vocab:user_friendsnum 0.\
-            }"%(uid, pwd, uid, register_time, uid, uid, uid)
+    # insert 语句必须写成这种，user:%s不能出现多次，注意前面的最后是;不是.
+    sparql = prefix + """insert DATA{
+                user:%s vocab:user_pwd '%s';
+                        vocab:user_name '%s';
+                        vocab:user_created_at '%s';
+                        vocab:user_statusesnum 0;
+                        vocab:user_followersnum 0;
+                        vocab:user_friendsnum 0.
+            }""" % (uid, pwd, uname, register_time)
     resp = gc.query("weibo", "json", sparql)
+    print(resp)
     resp = gc.checkpoint("weibo")
     ans["state"] = True
     ans["userId"] = uid

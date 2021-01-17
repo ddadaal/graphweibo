@@ -19,7 +19,7 @@ def register_api():
 
     # TODO 
     # 注册函数：完成用户注册，返回用户ID
-    result = register(username,hash(password),datetime.utcnow().isoformat())
+    result = register(username,password,datetime.utcnow().isoformat())
     print(result)
 
     if(result['state']): 
@@ -39,11 +39,12 @@ def login_api():
 
     # TODO 
     # 用户登录函数：检验用户身份
-    result = login(username, hash(password))
+    result = login(username, password)
     
     if(result['state']): 
-        token = encodeToken(result['userId'])
-        return Response(json.dumps({'userId': result['userId'], 'token': str(token)}), status=200, content_type='application/json')
+        uid = result['uid']
+        token = encodeToken(uid)
+        return Response(json.dumps({'userId': uid, 'token': token}), status=200, content_type='application/json')
     else:
         return Response(status=401)
 
