@@ -17,6 +17,6 @@ export interface FollowUserSchema {
     /** 不存在这个用户 */
     404: {};
     /** 本来就已经关注这个用户 */
-    405: {};
+    409: {};
   }
 }

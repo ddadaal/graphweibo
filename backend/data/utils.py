@@ -20,9 +20,18 @@ gc = GstoreConnector.GstoreConnector(IP, Port, username, password)
 
 # res = gc.load("weibo", "POST")
 
+def query(sparql: str):
+    return json.loads(gc.query("weibo", "json", sparql))
+
 def register(uname, pwd, register_time):
 
-    # NOTE 判断uname是否存在
+    # 判断uname是否存在
+    sparql = prefix + "select ?uid where { ?uid vocab:user_name '%s' }" % (uname)
+    resp = query(sparql)
+    print(resp)
+    if len(resp["results"]["bindings"]) > 0:
+        return { 'state': False }
+
     uid = ''.join(str(random.choice(range(10))) for _ in range(10))
     ans ={}
     sparql = prefix+" insert DATA{\
@@ -191,8 +200,6 @@ def getFollowings(uid, myid, page):
         'result': (ans[(page-1) * page_size : page * page_size], len(ans))
     }
 
-def query(sparql: str):
-    return json.loads(gc.query("weibo", "json", sparql))
 
 def paginated_query(clauses: List[str], select: str, count_select: str, orderby: str, page: int, query_count = True) -> Tuple[List, int]:
 

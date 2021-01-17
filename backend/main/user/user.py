@@ -27,7 +27,7 @@ def register_api():
         return Response(json.dumps({'userId': result['userId'], 'token': str(token)}), status=201, content_type='application/json')
         # return jsonify({'usrID': userID, 'token': str(token)})
     else:
-        return Response(status=405)
+        return Response(status=409)
 
 # 用户登录
 @user.route('/token', methods=['GET'])
@@ -39,7 +39,7 @@ def login_api():
 
     # TODO 
     # 用户登录函数：检验用户身份
-    result = login(username,hash(password))
+    result = login(username, hash(password))
     
     if(result['state']): 
         token = encodeToken(result['userId'])
@@ -71,7 +71,7 @@ def change_follow_api():
         elif result['msg']=='Inexist':
             return Response(status=404)
         else:
-            return Response(status=405)
+            return Response(status=409)
 
     # 取关
     elif request.method=='DELETE':
@@ -83,7 +83,7 @@ def change_follow_api():
         elif result['msg']=='Inexist':
             return Response(status=404)
         else:
-            return Response(status=405)
+            return Response(status=409)
 
 # 获取粉丝
 @user.route('/followers', methods=['GET'])

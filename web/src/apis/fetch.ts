@@ -87,7 +87,8 @@ export async function jsonFetch<T>(
       body: isForm ? (info.body as any) : JSON.stringify(info.body),
     });
 
-    const obj = await resp.json();
+    const body = await resp.text();
+    const obj = body ? JSON.parse(body) : {};
 
     if (resp.ok) {
       successEvent.execute({ status: resp.status, data: obj });

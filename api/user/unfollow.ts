@@ -17,6 +17,6 @@ export interface UnfollowUserSchema {
     /** 不存在这个用户 */
     404: {};
     /** 本来就没有关注这个用户 */
-    405: {};
+    409: {};
   }
 }

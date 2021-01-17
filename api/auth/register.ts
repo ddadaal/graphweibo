@@ -20,7 +20,7 @@ export interface RegisterSchema {
       userId: string;
     },
     /** 用户名已经存在 */
-    405: {
+    409: {
 
     }
   }
