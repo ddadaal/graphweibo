@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Box } from "grommet";
 import { useRouter } from "next/router";
 import { useAsync } from "react-async";
@@ -16,6 +16,7 @@ import { UserListItem } from "src/components/UserListItem";
 import { userApi } from "src/apis/user";
 import { UserResult } from "graphweibo-api/user/search";
 import { Pagination } from "src/components/Pagination";
+import produce from "immer";
 
 const api = getApi(userApi);
 
@@ -23,8 +24,6 @@ type Props = SSRPageProps<{
   results: UserResult[];
   totalCount: number;
 }>;
-
-const search = ([query]: any[]) => api.search({ query });
 
 interface SearchQuery {
   query: string;
@@ -40,7 +39,23 @@ export const SearchPage: NextPage<Props> = (props) => {
     return <UnifiedErrorPage error={props.error} />;
   }
 
-  const { results, totalCount } = props;
+  const { totalCount } = props;
+
+  const [results, setResults] = useState(props.results);
+
+  const onFollow = useCallback((u: UserResult) => {
+    setResults((r) => produce(r, (d) => {
+      const user = d.find((x) => x.userId == u.userId);
+      if (user) user.followersCount++;
+    }));
+  }, [setResults]);
+
+  const onUnfollow = useCallback((u: UserResult) => {
+    setResults((r) => produce(r, (d) => {
+      const user = d.find((x) => x.userId == u.userId);
+      if (user) user.followersCount--;
+    }));
+  }, [setResults]);
 
   const updateQuery = useCallback((newQuery: Partial<SearchQuery>) => {
     const combinedQuery = { ...query, ...newQuery };
@@ -65,6 +80,8 @@ export const SearchPage: NextPage<Props> = (props) => {
               <UserListItem
                 key={r.username}
                 user={r}
+                onUserFollow={onFollow}
+                onUserUnfollow={onUnfollow}
               />
             ))}
           </Box>

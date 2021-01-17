@@ -13,6 +13,7 @@
     "graphweibo-api": "file:../api",
     "grommet": "^2.16.2",
     "grommet-icons": "^4.5.0",
+    "immer": "^8.0.0",
     "luxon": "^1.25.0",
     "next": "10.0.5",
     "next-dark-mode": "^2.3.2",
