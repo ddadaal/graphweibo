@@ -1,7 +1,7 @@
 import { UserResult } from "graphweibo-api/user/search";
 import { Box } from "grommet";
 import { NextPage } from "next";
-import React, { useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import { getApi } from "src/apis";
 import { profileApi } from "src/apis/profile";
 import { HttpError } from "src/apis/fetch";
@@ -17,6 +17,7 @@ import {
   UserNotExistErrorPage,
 } from "src/components/dashboard/errorPages";
 import { Pagination } from "src/components/Pagination";
+import { useRouter } from "next/router";
 
 type Props = SSRPageProps<{
   page: number;
@@ -40,28 +41,22 @@ const DashboardFollowingsPage: NextPage<Props> = (props) => {
     return <UnifiedErrorPage error={props.error} />;
   }
 
-  const { followings } = props;
-  const [profile, setProfile] = useState(props.profile);
-
-  useEffect(() => {
-    setProfile(props.profile);
-  }, [props.profile.userId]);
+  const router = useRouter();
+  const refresh = useCallback(() => router.replace(router.asPath), [router.asPath]);
 
   return (
     <DashboardLayout
-      profile={profile}
-      userId={profile.userId}
+      profile={props.profile}
+      userId={props.profile.userId}
       tab="followings"
     >
       <Box gap="large">
-        {followings.map((w) => (
+        {props.followings.map((w) => (
           <UserListItem
             key={w.userId}
             user={w}
-            onUserFollow={() =>
-              setProfile((p) => ({ ...p, followingsCount: p.followingsCount+1 }))}
-            onUserUnfollow={() =>
-              setProfile((p) => ({ ...p, followingsCount: p.followingsCount-1 }))}
+            onUserFollow={refresh}
+            onUserUnfollow={refresh}
           />
         ))}
       </Box>
