@@ -163,10 +163,13 @@ def isFollow(uid1, uid2):
 def getFollowers(uid, myid, page):
 
     resp, count = paginated_query(
-        ["?x vocab:userrelation_tuid '%s'" % uid],
-        "?x",
-        "?x",
-        "?x",
+        [
+            "?x vocab:userrelation_tuid '%s'" % uid,
+            "?x vocab:userrelation_suid ?sid",     
+        ],
+        "?sid",
+        "?sid",
+        "?sid",
         page
     )
 
@@ -174,7 +177,7 @@ def getFollowers(uid, myid, page):
     for data in resp:
         elem = {}
         # get the first id
-        uid = data['x']['value'][-21:-11]
+        uid = data['sid']['value'][-10:]
         elem["userId"] = uid
         tmp = getProfile(uid)
         elem["username"] = tmp["username"]
