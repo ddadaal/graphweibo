@@ -158,11 +158,17 @@ def isFollow(uid1, uid2):
 
 
 def getFollowers(uid, myid, page):
-    ans = []
-    sparql = prefix+" select ?x where{?x vocab:userrelation_suid '%s'.}"%uid
-    resp = json.loads(gc.query("weibo", "json", sparql))
 
-    for data in resp['results']['bindings']:
+    resp, count = paginated_query(
+        ["?x vocab:userrelation_suid '%s'" % uid],
+        "?x",
+        "?x",
+        "?x",
+        page
+    )
+
+    ans = []
+    for data in resp:
         elem = {}
         uid = data['x']['value'][-10:]
         elem["userId"] = uid
@@ -178,7 +184,7 @@ def getFollowers(uid, myid, page):
     
     return {
         'state': True,
-        'result': (ans[(page-1) * page_size : page * page_size], len(ans))
+        'result': (ans, count),
     }
 
 def _get_following_user_ids(uid):
@@ -189,12 +195,16 @@ def _get_following_user_ids(uid):
 
 
 def getFollowings(uid, myid, page):
-    ans = []
-    sparql = prefix+" select ?x where{'%s' vocab:userrelation_suid ?x.}"%uid
-    resp = json.loads(gc.query("weibo", "json", sparql))
+    resp, count = paginated_query(
+        ["'%s' vocab:userrelation_suid ?x" % uid],
+        "?x",
+        "?x",
+        "?x",
+        page
+    )
 
-    for data in resp['results']['bindings']:
-        
+    ans = []
+    for data in resp:
         elem = {}
         uid = data['x']['value'][-10:]
         elem["userId"] = uid
@@ -210,7 +220,7 @@ def getFollowings(uid, myid, page):
     
     return {
         'state': True,
-        'result': (ans[(page-1) * page_size : page * page_size], len(ans))
+        'result': (ans, count),
     }
 
 
