@@ -133,8 +133,8 @@ export default {
         },
         contentSelector: {
           weibo: "微博",
-          following: "关注Ta的用户",
-          followers: "Ta关注的用户",
+          followers: "关注Ta的用户",
+          followings: "Ta关注的用户",
         },
       },
       home: {

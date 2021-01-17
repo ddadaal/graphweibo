@@ -25,7 +25,7 @@ const TabTitle: React.FC<{
 }> = ({ textId, count }) => (
   <Text>
     <LocalizedString id={textId} />
-  ({count})
+    ({count})
   </Text>
 );
 
@@ -37,8 +37,8 @@ export const ContentSelector: React.FC<Props> = (props) => {
       onActive={(i) => Router.push(`/profile/${props.userId}/${i == 0 ? "" : tabs[i]}`)}
     >
       <Tab title={<TabTitle textId={root.weibo} count={props.weiboCount} />} />
+      <Tab title={<TabTitle textId={root.followings} count={props.followingsCount} />} />
       <Tab title={<TabTitle textId={root.followers} count={props.followersCount} />} />
-      <Tab title={<TabTitle textId={root.following} count={props.followingsCount} />} />
     </Tabs>
   );
 };

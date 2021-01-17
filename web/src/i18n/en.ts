@@ -134,7 +134,7 @@ export default {
         },
         contentSelector: {
           weibo: "Weibo",
-          following: "Following",
+          followings: "Followings",
           followers: "Followers",
         },
       },

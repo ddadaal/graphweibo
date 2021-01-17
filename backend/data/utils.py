@@ -23,7 +23,9 @@ gc = GstoreConnector.GstoreConnector(IP, Port, username, password)
 # res = gc.load("weibo", "POST")
 
 def query(sparql: str):
-    return json.loads(gc.query("weibo", "json", sparql))
+    resp = gc.query("weibo", "json", sparql)
+    print(resp)
+    return json.loads(resp)
 
 def register(uname, pwd, register_time):
 
@@ -101,48 +103,100 @@ def follow(uid1, uid2):
     sparql_q_uid2 = "select ?x where\
             {<file:///home/fxb/d2rq/graph_dump.nt#user/%s> ?o ?x}"%uid2
     resp = json.loads(gc.query("weibo", "json", sparql_q_uid2))["results"]["bindings"]
+
     if len(resp)==0:
-        ans["state"] = False
-        ans["msg"] = 'uid2 inexist'
-        print(ans)
-        return ans
+        return {
+            'state': False,
+            "msg": 'uid2 inexist',
+        }
+
     # query if uid1 have relation with uid2
     sparql_q_follow = "select ?x where\
             {<file:///home/fxb/d2rq/graph_dump.nt#userrelation/%s/%s> <file:///home/fxb/d2rq/vocab/userrelation_tuid> ?x}"%(uid1, uid2)
     resp = json.loads(gc.query("weibo", "json", sparql_q_follow))["results"]["bindings"]
+
     if len(resp)!=0:
-        ans["state"] = False
-        ans["msg"] = "AlreadyFollowed"
-        print(ans)
-        return ans
+        return {
+            'state': False,
+            "msg": 'AlreadyFollowed',
+        }
 
     # insert rdf 
-    sparql_insert = prefix+ """
-                insert DATA{
-                    <file:///home/fxb/d2rq/graph_dump.nt#userrelation/%s/%s> vocab:userrelation_tuid '%s';
-                                                                         vocab:userrelation_suid '%s'.
-             }""" % (uid1, uid2, uid2, uid1)
-    resp = json.loads(gc.query("weibo","json", sparql_insert))
+    sparql = prefix + f"""
+        insert data {{
+            <file:///home/fxb/d2rq/graph_dump.nt#userrelation/{uid1}/{uid2}> vocab:userrelation_tuid '{uid2}';
+                                                                             vocab:userrelation_suid '{uid1}'.
+        }}
+    """
+    resp = query(sparql)
     resp = gc.checkpoint("weibo")
+
+    # update profile
+
+    # get current numbers
+    followingsnum1 = getProfile(uid1)["followingsCount"]
+    followersnum2 = getProfile(uid2)["followersCount"]
+
+    sparql = prefix + f"""
+        DELETE {{
+            user:{uid1} vocab:user_friendsnum "{followingsnum1}"^^xsd:integer .
+            user:{uid2} vocab:user_followersnum "{followersnum2}"^^xsd:integer .
+        }}
+        INSERT {{
+            user:{uid1} vocab:user_friendsnum "{followingsnum1 + 1}"^^xsd:integer .
+            user:{uid2} vocab:user_followersnum "{followersnum2 + 1}"^^xsd:integer .
+        }}
+        WHERE {{
+            user:{uid1} vocab:user_friendsnum "{followingsnum1}"^^xsd:integer .
+            user:{uid2} vocab:user_followersnum "{followersnum2}"^^xsd:integer .
+        }}
+    """ 
+    resp = query(sparql)
+    resp = gc.checkpoint("weibo")
+    print(resp)
     
-    ans["state"] = True
-    ans["msg"] = "success"
-    return ans
+    return {
+        'state': True,
+        'msg': "success"
+    }
 
 def unfollow(uid1, uid2):
     # delete rdf 
-    ans = {}
     
-    sparql_q_delete1 = prefix+""" delete DATA{\
-            <file:///home/fxb/d2rq/graph_dump.nt#userrelation/%s/%s> vocab:userrelation_tuid '%s';
-                                                                    vocab:userrelation_suid '%s'.
-                            }""" % (uid1, uid2, uid2, uid1)
-    resp = json.loads(gc.query("weibo","json", sparql_q_delete1))
+    sparql = prefix + f"""
+            DELETE DATA {{
+                <file:///home/fxb/d2rq/graph_dump.nt#userrelation/{uid1}/{uid2}> vocab:userrelation_tuid '{uid2}';
+                                                                                 vocab:userrelation_suid '{uid1}'.
+            }}
+    """
+    resp = query(sparql)
     resp = gc.checkpoint("weibo")
+
     
-    ans["state"] = True
-    ans["msg"] = "success"
-    return ans
+    # update profile
+    followingsnum1 = getProfile(uid1)["followingsCount"]
+    followersnum2 = getProfile(uid2)["followersCount"]
+
+    sparql = prefix + f"""
+        DELETE {{
+            user:{uid1} vocab:user_friendsnum "{followingsnum1}"^^xsd:integer .
+            user:{uid2} vocab:user_followersnum "{followersnum2}"^^xsd:integer .
+        }}
+        INSERT {{
+            user:{uid1} vocab:user_friendsnum "{followingsnum1 - 1}"^^xsd:integer .
+            user:{uid2} vocab:user_followersnum "{followersnum2 - 1}"^^xsd:integer .
+        }}
+        WHERE {{
+            user:{uid1} vocab:user_friendsnum "{followingsnum1}"^^xsd:integer .
+            user:{uid2} vocab:user_followersnum "{followersnum2}"^^xsd:integer .
+        }}
+    """ 
+    resp = query(sparql)
+    
+    return {
+        'state': True,
+        'msg': "success"
+    }
 
 def isFollow(uid1, uid2):
     # return true if uid1 follow uid2
