@@ -115,15 +115,14 @@ def follow(uid1, uid2):
         ans["msg"] = "AlreadyFollowed"
         print(ans)
         return ans
-    # insert rdf 
-    sparql_q_insert1 = prefix+" insert DATA{\
-            <file:///home/fxb/d2rq/graph_dump.nt#userrelation/%s/%s> vocab:userrelation_tuid %s}"%(uid1, uid2,uid2)
-    sparql_q_insert2 = prefix+" insert DATA{\
-            <file:///home/fxb/d2rq/graph_dump.nt#userrelation/%s/%s> vocab:userrelation_suid %s}"%(uid1, uid2,uid1)
-    resp = json.loads(gc.query("weibo","json", sparql_q_insert1))
-    
-    resp = json.loads(gc.query("weibo","json", sparql_q_insert2))
 
+    # insert rdf 
+    sparql_insert = prefix+ """
+                insert DATA{
+                    <file:///home/fxb/d2rq/graph_dump.nt#userrelation/%s/%s> vocab:userrelation_tuid '%s';
+                                                                         vocab:userrelation_suid '%s'.
+             }""" % (uid1, uid2, uid2, uid1)
+    resp = json.loads(gc.query("weibo","json", sparql_insert))
     resp = gc.checkpoint("weibo")
     
     ans["state"] = True
@@ -134,26 +133,24 @@ def unfollow(uid1, uid2):
     # delete rdf 
     ans = {}
     
-    sparql_q_delete1 = prefix+" delete DATA{\
-            <file:///home/fxb/d2rq/graph_dump.nt#userrelation/%s/%s> vocab:userrelation_tuid %s}"%(uid1, uid2,uid2)
-    sparql_q_delete2 = prefix+"delete DATA{\
-            <file:///home/fxb/d2rq/graph_dump.nt#userrelation/%s/%s> vocab:userrelation_suid %s}"%(uid1, uid2,uid1)
+    sparql_q_delete1 = prefix+""" delete DATA{\
+            <file:///home/fxb/d2rq/graph_dump.nt#userrelation/%s/%s> vocab:userrelation_tuid '%s';
+                                                                    vocab:userrelation_suid '%s'.
+                            }""" % (uid1, uid2, uid2, uid1)
     resp = json.loads(gc.query("weibo","json", sparql_q_delete1))
-    
-    resp = json.loads(gc.query("weibo","json", sparql_q_delete2))
-
     resp = gc.checkpoint("weibo")
     
     ans["state"] = True
     ans["msg"] = "success"
     return ans
 
-userrelation_prefix = "file:///home/fxb/d2rq/graph_dump.nt#userrelation"
-
 def isFollow(uid1, uid2):
     # return true if uid1 follow uid2
-    sparql_q_follow = prefix+ "select ?x where\
-            {<%s/%s/%s> vocab:userrelation_tuid ?x}"%(userrelation_prefix, uid1, uid2)
+    sparql_q_follow = prefix+ """select ?x where\
+            {
+                ?x vocab:userrelation_suid '%s' .
+                ?x vocab:userrelation_tuid '%s' .
+            }"""%(uid1, uid2)
     resp = json.loads(gc.query("weibo", "json", sparql_q_follow))["results"]["bindings"]
     if len(resp)!=0:
         return True
