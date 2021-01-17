@@ -160,7 +160,7 @@ def isFollow(uid1, uid2):
 def getFollowers(uid, myid, page):
 
     resp, count = paginated_query(
-        ["?x vocab:userrelation_suid '%s'" % uid],
+        ["?x vocab:userrelation_tuid '%s'" % uid],
         "?x",
         "?x",
         "?x",
@@ -170,7 +170,8 @@ def getFollowers(uid, myid, page):
     ans = []
     for data in resp:
         elem = {}
-        uid = data['x']['value'][-10:]
+        # get the first id
+        uid = data['x']['value'][-21:-11]
         elem["userId"] = uid
         tmp = getProfile(uid)
         elem["username"] = tmp["username"]
@@ -188,7 +189,7 @@ def getFollowers(uid, myid, page):
     }
 
 def _get_following_user_ids(uid):
-    sparql = prefix+" select ?x where{'%s' vocab:userrelation_suid ?x.}"%uid
+    sparql = prefix+" select ?x where{?x vocab:userrelation_suid '%s'.}"%uid
     resp = query(sparql)
     print(resp)
     return [data['x']['value'][-10:] for data in resp['results']['bindings']]
@@ -196,7 +197,7 @@ def _get_following_user_ids(uid):
 
 def getFollowings(uid, myid, page):
     resp, count = paginated_query(
-        ["'%s' vocab:userrelation_suid ?x" % uid],
+        ["?x vocab:userrelation_suid '%s'" % uid],
         "?x",
         "?x",
         "?x",
