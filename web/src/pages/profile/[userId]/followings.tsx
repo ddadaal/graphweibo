@@ -1,7 +1,7 @@
 import { UserResult } from "graphweibo-api/user/search";
 import { Box } from "grommet";
 import { NextPage } from "next";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getApi } from "src/apis";
 import { profileApi } from "src/apis/profile";
 import { HttpError } from "src/apis/fetch";
@@ -42,6 +42,10 @@ const DashboardFollowingsPage: NextPage<Props> = (props) => {
 
   const { followings } = props;
   const [profile, setProfile] = useState(props.profile);
+
+  useEffect(() => {
+    setProfile(props.profile);
+  }, [props.profile.userId]);
 
   return (
     <DashboardLayout
