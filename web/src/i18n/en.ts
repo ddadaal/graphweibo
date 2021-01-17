@@ -112,6 +112,10 @@ export default {
       integer: "Please input a valid integer.",
     },
     pages: {
+      index: {
+        more: "Load more" ,
+        moreLoading: "Loading more...",
+      },
       connection: {
         fromUser: "from User",
         toUser: "to User",

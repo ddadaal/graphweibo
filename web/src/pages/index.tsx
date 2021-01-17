@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Box, InfiniteScroll } from "grommet";
+import { Anchor, Box, InfiniteScroll, Paragraph } from "grommet";
 import { WeiboInput } from "src/components/WeiboInput";
 import { NextPage } from "next";
 import { getApi } from "src/apis";
@@ -12,6 +12,10 @@ import { WeiboResult } from "graphweibo-api/weibo/getFollowings";
 import { getCurrentUserInCookie, UserStore } from "src/stores/UserStore";
 import { useStore } from "simstate";
 import { useHttpRequest } from "src/utils/http";
+import { LocalizedString } from "simstate-i18n";
+import { lang } from "src/i18n";
+
+const root = lang.pages.index;
 
 const api = getApi(weiboApi);
 
@@ -48,7 +52,7 @@ const Home: NextPage<Props> = (props) => {
         <WeiboInput />
       </Box>
       <Box gap="large">
-        <InfiniteScroll items={items} onMore={onMore}>
+        <InfiniteScroll items={items}>
           {(r: WeiboResult) => (
             <Box key={r.weiboId} margin={{ vertical: "small" }}>
               <WeiboListItem
@@ -57,6 +61,11 @@ const Home: NextPage<Props> = (props) => {
             </Box>
           )}
         </InfiniteScroll>
+        <Box pad="small" flex fill border align="center" >
+          <Anchor disabled={loading} onClick={onMore}>
+            <LocalizedString id={loading ? root.moreLoading : root.more}/>
+          </Anchor>
+        </Box>
       </Box>
     </Box>
   );
