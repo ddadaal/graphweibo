@@ -10,9 +10,11 @@ Port = 9000
 username = "root"
 password = "123456"
 
-prefix = "prefix vocab:   <file:///home/fxb/d2rq/vocab/> \
-            prefix user:      <file:///home/fxb/d2rq/graph_dump.nt#user/> \
-            prefix weibo:     <file:///home/fxb/d2rq/graph_dump.nt#weibo/>"
+prefix = """prefix vocab:   <file:///home/fxb/d2rq/vocab/>
+            prefix user:      <file:///home/fxb/d2rq/graph_dump.nt#user/>
+            prefix weibo:     <file:///home/fxb/d2rq/graph_dump.nt#weibo/>
+            PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+            """
 
 page_size = 10
 
@@ -35,13 +37,14 @@ def register(uname, pwd, register_time):
     uid = ''.join(str(random.choice(range(10))) for _ in range(10))
     ans ={}
     # insert 语句必须写成这种，user:%s不能出现多次，注意前面的最后是;不是.
+    # 注意整数类型字面量需要写成"0"^^xsd:integer
     sparql = prefix + """insert DATA{
                 user:%s vocab:user_pwd '%s';
                         vocab:user_name '%s';
                         vocab:user_created_at '%s';
-                        vocab:user_statusesnum 0;
-                        vocab:user_followersnum 0;
-                        vocab:user_friendsnum 0.
+                        vocab:user_statusesnum "0"^^xsd:integer;
+                        vocab:user_followersnum "0"^^xsd:integer;
+                        vocab:user_friendsnum "0"^^xsd:integer.
             }""" % (uid, pwd, uname, register_time)
     resp = gc.query("weibo", "json", sparql)
     print(resp)
@@ -81,13 +84,13 @@ def getProfile(uid):
     ans["registerTime"] = json.loads(gc.query("weibo","json", sparql))["results"]["bindings"][0]["x"]["value"]
     
     sparql = prefix+" select ?x where{ user:%s vocab:user_statusesnum ?x }"%(uid)
-    ans["weiboCount"] = json.loads(gc.query("weibo","json", sparql))["results"]["bindings"][0]["x"]["value"]
+    ans["weiboCount"] = int(json.loads(gc.query("weibo","json", sparql))["results"]["bindings"][0]["x"]["value"])
     
     sparql = prefix+" select ?x where{ user:%s vocab:user_followersnum ?x }"%(uid)
-    ans["followersCount"] = json.loads(gc.query("weibo","json", sparql))["results"]["bindings"][0]["x"]["value"]
+    ans["followersCount"] = int(json.loads(gc.query("weibo","json", sparql))["results"]["bindings"][0]["x"]["value"])
     
     sparql = prefix+" select ?x where{ user:%s vocab:user_friendsnum ?x }"%(uid)
-    ans["followingsCount"] = json.loads(gc.query("weibo","json", sparql))["results"]["bindings"][0]["x"]["value"]
+    ans["followingsCount"] = int(json.loads(gc.query("weibo","json", sparql))["results"]["bindings"][0]["x"]["value"])
     
     return ans
 
