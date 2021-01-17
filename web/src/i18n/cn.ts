@@ -111,6 +111,10 @@ export default {
       integer: "请输入整数。",
     },
     pages: {
+      index: {
+        more: "加载更多微博" ,
+        moreLoading: "加载更多微博中……",
+      },
       connection: {
         fromUser: "从用户",
         toUser: "到用户",
