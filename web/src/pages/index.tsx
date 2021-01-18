@@ -1,5 +1,5 @@
-import React, { isValidElement, useCallback, useEffect, useRef, useState } from "react";
-import { Anchor, Box, InfiniteScroll, Paragraph } from "grommet";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Anchor, Box, InfiniteScroll } from "grommet";
 import { WeiboInput } from "src/components/WeiboInput";
 import { NextPage } from "next";
 import { getApi } from "src/apis";
@@ -15,9 +15,7 @@ import { useHttpRequest } from "src/utils/http";
 import { LocalizedString } from "simstate-i18n";
 import { lang } from "src/i18n";
 import { isInViewport } from "src/utils/dom";
-import { throttle } from "src/utils/throttle";
-import { useWindowScroll } from "react-use";
-import { isServer } from "src/utils/isServer";
+import { ScrollEventStore } from "src/stores/ScrollEventStore";
 
 const root = lang.pages.index;
 
@@ -45,25 +43,37 @@ const Home: NextPage<Props> = (props) => {
   const [items, setItems] = useState(props.results);
   const [loading, setLoading] = useState(false);
 
+  const loadingRef = useRef(false);
+
   const request = useHttpRequest(setLoading);
 
-  const onMore = useCallback(() => request(async () => {
-    const newPage = page.current + 1;
-    const newWeibos = await load(userStore.user, newPage);
-    page.current = newPage;
-    setItems((items) => [...items, ...newWeibos.results ]);
-  }), [page, userStore.user]);
+  const onMore = useCallback(() => {
+    if (loadingRef.current) { return; }
+    loadingRef.current = true;
+    request(async () => {
+      const newPage = page.current + 1;
+      const newWeibos = await load(userStore.user, newPage);
+      page.current = newPage;
+      setItems((items) => [...items, ...newWeibos.results ]);
+    }).finally(() => {
+      loadingRef.current = false;
+    });
+  }, [page, userStore.user]);
 
   const moreRef = useRef<HTMLDivElement | null>(null);
 
-  const { x, y } = useWindowScroll();
-  console.log(x, y);
-  useEffect(() => {
-    console.log(x, y);
+  const eventStore = useStore(ScrollEventStore);
+
+  const onScroll = useCallback(() => {
     if (isInViewport(moreRef.current!)) {
       onMore();
     }
-  }, [x, y]);
+  }, []);
+
+  useEffect(() => {
+    eventStore.register(onScroll);
+    return () => eventStore.unregister(onScroll);
+  }, []);
 
   const reload = useCallback(() => {
     request(async () => {
@@ -79,7 +89,7 @@ const Home: NextPage<Props> = (props) => {
   }, [reload]);
 
   return (
-    <Box fill gap="large" alignSelf="center" width={{ max: "large" }}>
+    <Box fill gap="large" alignSelf="center" width={{ max: "large" }} >
       <Box>
         <WeiboInput onSubmitCompleted={reload}/>
       </Box>

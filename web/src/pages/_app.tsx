@@ -14,6 +14,7 @@ import { ThemeStore } from "src/stores/ThemeStore";
 import useConstant from "src/utils/useConstant";
 import { changeToken } from "src/apis/fetch";
 import "react-toastify/dist/ReactToastify.css";
+import { ScrollEventStore } from "src/stores/ScrollEventStore";
 
 const TopProgressBar = dynamic(
   () => {
@@ -41,14 +42,14 @@ function MyApp({ Component, pageProps, user, firstLanguage }: Props) {
   });
 
   const i18nStore = useConstant(() => createI18nStore(i18nContext, firstLanguage));
+  const scrollEventStore = useConstant(() => createStore(ScrollEventStore));
 
-  return (
-    <StoreProvider stores={[i18nStore, userStore, themeStore]}>
-      <MainLayout >
-        <TopProgressBar />
-        <Component {...pageProps} />
-      </MainLayout>
-    </StoreProvider>
+  return ( <StoreProvider stores={[i18nStore, userStore, themeStore, scrollEventStore]}>
+    <MainLayout >
+      <TopProgressBar />
+      <Component {...pageProps} />
+    </MainLayout>
+  </StoreProvider>
   );
 }
 
