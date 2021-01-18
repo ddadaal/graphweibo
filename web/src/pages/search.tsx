@@ -43,6 +43,10 @@ export const SearchPage: NextPage<Props> = (props) => {
 
   const [results, setResults] = useState(props.results);
 
+  useEffect(() => {
+    setResults(props.results);
+  }, [props.results]);
+
   const onFollow = useCallback((u: UserResult) => {
     setResults((r) => produce(r, (d) => {
       const user = d.find((x) => x.userId == u.userId);

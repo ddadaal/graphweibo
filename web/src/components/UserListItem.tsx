@@ -129,11 +129,19 @@ export const UserListItem: React.FC<Props> = ({
                 <Box width="108px">
                   <Button size="medium" fill label={(
                     <LocalizedString id={
-                      loading
-                        ? user.following ? root.unfollowInProgress : root.followInProgress
-                        : following ? root.following : root.follow}
+                      userStore.user.userId == user.userId
+                        ? root.self
+                        : loading
+                          ? user.following
+                            ? root.unfollowInProgress
+                            : root.followInProgress
+                          : following
+                            ? root.following
+                            : root.follow}
                     />
-                  )} onClick={onClick} disabled={loading}
+                  )}
+                  onClick={onClick}
+                  disabled={userStore.user.userId == user.userId || loading}
                   >
                   </Button>
                 </Box>

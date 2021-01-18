@@ -11,6 +11,8 @@ Port = 9000
 username = "root"
 password = "123456"
 
+database_name = "Weibo"
+
 prefix = """prefix vocab:   <file:///home/fxb/d2rq/vocab/>
             prefix user:      <file:///home/fxb/d2rq/graph_dump.nt#user/>
             prefix weibo:     <file:///home/fxb/d2rq/graph_dump.nt#weibo/>
@@ -21,50 +23,52 @@ page_size = 10
 
 gc = GstoreConnector.GstoreConnector(IP, Port, username, password)
 
-# res = gc.load("weibo", "POST")
-
 def query(sparql: str):
-    resp = gc.query("weibo", "json", sparql)
-    print(resp)
+    resp = gc.query(database_name, "json", sparql)
+    # print(resp)
     return json.loads(resp)
+
+def ask_query(sparql: str) -> bool:
+    resp = query(sparql)
+    return resp["results"]["bindings"][0]["askResult"]["value"]
+
+def check_uid_existence(uid: str) -> bool:
+    return ask_query(prefix + f"ask where {{ user:{uid} ?v ?o }}")
 
 def register(uname, pwd, register_time):
 
     # 判断uname是否存在
-    sparql = prefix + "select ?uid where { ?uid vocab:user_name '%s' }" % (uname)
-    resp = query(sparql)
-    print(resp)
-    if len(resp["results"]["bindings"]) > 0:
+    if ask_query(prefix + f"ask where {{ ?uid vocab:user_name '{uname}' }}"):
         return { 'state': False }
 
     uid = ''.join(str(random.choice(range(10))) for _ in range(10))
-    ans ={}
+
     # insert 语句必须写成这种，user:%s不能出现多次，注意前面的最后是;不是.
     # 注意整数类型字面量需要写成"0"^^xsd:integer
-    sparql = prefix + """insert DATA{
-                user:%s vocab:user_pwd '%s';
-                        vocab:user_name '%s';
-                        vocab:user_created_at '%s';
-                        vocab:user_statusesnum "0"^^xsd:integer;
-                        vocab:user_followersnum "0"^^xsd:integer;
-                        vocab:user_friendsnum "0"^^xsd:integer.
-            }""" % (uid, pwd, uname, register_time)
-    resp = gc.query("weibo", "json", sparql)
-    print(resp)
+    sparql = prefix + f"""
+        insert data {{
+            user:{uid} vocab:user_pwd '{pwd}';
+                    vocab:user_name '{uname}';
+                    vocab:user_created_at '{register_time}';
+                    vocab:user_statusesnum "0"^^xsd:integer;
+                    vocab:user_followersnum "0"^^xsd:integer;
+                    vocab:user_friendsnum "0"^^xsd:integer.
+        }}"""
+    resp = query(sparql)
     resp = gc.checkpoint("weibo")
-    ans["state"] = True
-    ans["userId"] = uid
     
-    print(ans)
-    return ans
+    return {
+        "state": True,
+        "userId": uid,
+    }
 
 def login(uname, pwd):
-    sparql = prefix+" select ?uid where{\
-            ?uid vocab:user_pwd '%s'.\
-            ?uid vocab:user_name '%s'.\
-            }"%(pwd, uname)
-    resp = json.loads(gc.query("weibo","json", sparql))["results"]["bindings"]
-    print(resp)
+    sparql = prefix + f"""
+        select ?uid where{{
+            ?uid vocab:user_pwd '{pwd}'.
+            ?uid vocab:user_name '{uname}'.
+        }}"""
+    resp = query(sparql)["results"]["bindings"]
     ans = {}
     if len(resp)==0:
         ans["state"] = False
@@ -72,38 +76,52 @@ def login(uname, pwd):
     else:
         ans["state"] = True
         ans["uid"] = resp[0]["uid"]["value"][-10:]
-        print(ans)
     
     return ans
     
 
 # TODO If user not exists, return None
 def getProfile(uid):
-    ans = { "userId": uid }
-    sparql = prefix+" select ?x where{ user:%s vocab:user_name ?x.}"%(uid)
-    ans["username"] = json.loads(gc.query("weibo","json", sparql))["results"]["bindings"][0]["x"]["value"]
-    
-    sparql = prefix+" select ?x where{ user:%s vocab:user_created_at ?x }"%(uid)
-    ans["registerTime"] = json.loads(gc.query("weibo","json", sparql))["results"]["bindings"][0]["x"]["value"]
-    
-    sparql = prefix+" select ?x where{ user:%s vocab:user_statusesnum ?x }"%(uid)
-    ans["weiboCount"] = int(json.loads(gc.query("weibo","json", sparql))["results"]["bindings"][0]["x"]["value"])
-    
-    sparql = prefix+" select ?x where{ user:%s vocab:user_followersnum ?x }"%(uid)
-    ans["followersCount"] = int(json.loads(gc.query("weibo","json", sparql))["results"]["bindings"][0]["x"]["value"])
-    
-    sparql = prefix+" select ?x where{ user:%s vocab:user_friendsnum ?x }"%(uid)
-    ans["followingsCount"] = int(json.loads(gc.query("weibo","json", sparql))["results"]["bindings"][0]["x"]["value"])
-    
+
+    keys = ["username","registerTime","weiboCount","followersCount","followingsCount"]
+
+    sparql = prefix + f"""
+        select ?username ?registerTime ?weiboCount ?followersCount ?followingsCount where {{
+            user:{uid} vocab:user_name ?username .
+            user:{uid} vocab:user_created_at ?registerTime .
+            user:{uid} vocab:user_statusesnum ?weiboCount .
+            user:{uid} vocab:user_followersnum ?followersCount .
+            user:{uid} vocab:user_friendsnum ?followingsCount .
+        }}
+    """
+
+    def get_value(resp, key: str):
+        return resp["results"]["bindings"][0][key]["value"]
+
+    resp = query(sparql)
+    ans = { 
+        "userId": uid,
+        "username": get_value(resp, "username"),
+        "registerTime": get_value(resp, "registerTime"),
+        "weiboCount": int(get_value(resp, "weiboCount")),
+        "followersCount": int(get_value(resp, "followersCount")),
+        "followingsCount": int(get_value(resp, "followingsCount")),
+    }
     return ans
 
 
 def follow(uid1, uid2):
-    ans = {}
+    # Cannot follow oneself
+    if uid1 == uid2:
+        return {
+            'state': False,
+            'msg': "Circular"
+        }
+
     # query uid2 exist or not
     sparql_q_uid2 = "select ?x where\
             {<file:///home/fxb/d2rq/graph_dump.nt#user/%s> ?o ?x}"%uid2
-    resp = json.loads(gc.query("weibo", "json", sparql_q_uid2))["results"]["bindings"]
+    resp = query(sparql_q_uid2)["results"]["bindings"]
 
     if len(resp)==0:
         return {
@@ -114,7 +132,7 @@ def follow(uid1, uid2):
     # query if uid1 have relation with uid2
     sparql_q_follow = "select ?x where\
             {<file:///home/fxb/d2rq/graph_dump.nt#userrelation/%s/%s> <file:///home/fxb/d2rq/vocab/userrelation_tuid> ?x}"%(uid1, uid2)
-    resp = json.loads(gc.query("weibo", "json", sparql_q_follow))["results"]["bindings"]
+    resp = query(sparql_q_follow)["results"]["bindings"]
 
     if len(resp)!=0:
         return {
@@ -154,21 +172,27 @@ def follow(uid1, uid2):
     """ 
     resp = query(sparql)
     resp = gc.checkpoint("weibo")
-    print(resp)
-    
+
     return {
         'state': True,
         'msg': "success"
     }
 
 def unfollow(uid1, uid2):
+    # Circular
+    if uid1 == uid2:
+        return {
+            'state': False,
+            'msg': "Circular"
+        }
+
     # delete rdf 
     
     sparql = prefix + f"""
-            DELETE DATA {{
-                <file:///home/fxb/d2rq/graph_dump.nt#userrelation/{uid1}/{uid2}> vocab:userrelation_tuid '{uid2}';
-                                                                                 vocab:userrelation_suid '{uid1}'.
-            }}
+        DELETE DATA {{
+            <file:///home/fxb/d2rq/graph_dump.nt#userrelation/{uid1}/{uid2}> vocab:userrelation_tuid '{uid2}';
+                                                                                vocab:userrelation_suid '{uid1}'.
+        }}
     """
     resp = query(sparql)
     resp = gc.checkpoint("weibo")
@@ -202,15 +226,15 @@ def unfollow(uid1, uid2):
 
 def isFollow(uid1, uid2):
     # return true if uid1 follow uid2
-    sparql_q_follow = prefix+ """select ?x where\
-            {
-                ?x vocab:userrelation_suid '%s' .
-                ?x vocab:userrelation_tuid '%s' .
-            }"""%(uid1, uid2)
-    resp = json.loads(gc.query("weibo", "json", sparql_q_follow))["results"]["bindings"]
-    if len(resp)!=0:
-        return True
-    return False
+    sparql_q_follow = prefix+ f"""
+        select ?x where\
+            {{
+                ?x vocab:userrelation_suid '{uid1}' .
+                ?x vocab:userrelation_tuid '{uid2}' .
+            }}
+    """
+    resp = query(sparql_q_follow)["results"]["bindings"]
+    return len(resp) != 0
 
 
 def getFollowers(uid, myid, page):
@@ -240,7 +264,6 @@ def getFollowers(uid, myid, page):
         elem["following"] = myid and isFollow(myid, uid)
         elem["followed"] = myid and isFollow(uid, myid)
         ans.append(elem)
-        # print(elem)
     
     return {
         'state': True,
@@ -250,7 +273,6 @@ def getFollowers(uid, myid, page):
 def _get_following_user_ids(uid):
     sparql = prefix+" select ?x where{?x vocab:userrelation_suid '%s'.}"%uid
     resp = query(sparql)
-    print(resp)
     return [data['x']['value'][-10:] for data in resp['results']['bindings']]
 
 
@@ -276,7 +298,6 @@ def getFollowings(uid, myid, page):
         elem["following"] = myid and isFollow(myid, uid)
         elem["followed"] = myid and isFollow(uid, myid)
         ans.append(elem)
-        # print(elem)
     
     return {
         'state': True,
@@ -312,7 +333,6 @@ def paginated_query(clauses: List[str], select: str, count_select: str, orderby:
         " % (select, clause, orderby, page_size, (page - 1) * page_size)
     
     resp = query(sparql)
-    print(resp)
 
     return resp["results"]["bindings"], count
 
@@ -324,11 +344,11 @@ def searchUserById(uid, myid):
     d["following"] = isFollow(myid, uid)
     return d
 
-def searchUserByQuery(query, uid, page):
+def searchUserByQuery(q, uid, page):
 
     clause = [
         "?uid vocab:user_name ?username",
-        "FILTER regex(?username, '.*%s.*')" % query,
+        "FILTER regex(?username, '.*%s.*')" % q,
     ]
     resp, count = paginated_query(clause, "?uid", "?uid", "?uid", page)
 
@@ -353,7 +373,7 @@ def searchUserByQuery(query, uid, page):
                 <%s> vocab:user_friendsnum ?followingsCount.\
                 }"%(item, item, item, item)
         
-        resp = json.loads(gc.query("weibo","json", sparql))["results"]["bindings"][0]
+        resp = query(sparql)["results"]["bindings"][0]
         d["username"] = resp["username"]["value"]
         d["weiboCount"] = resp["weiboCount"]["value"]
         d["followersCount"] = resp["followersCount"]["value"]
@@ -384,10 +404,7 @@ def postWeibo(uid, content):
                             vocab:weibo_uid '{uid}'.
             }}"""
     
-    print(sparql)
     resp = query(sparql)
-    print(resp)
-    print(mid)
 
     # update the profile
     weibonum = getProfile(uid)["weiboCount"]
@@ -414,6 +431,8 @@ def postWeibo(uid, content):
 def getUserWeibo(uid, page):
 
     # TODO check user existence
+    if not check_uid_existence(uid):
+        return { 'state': False, 'results': [] }
 
     clauses =[
         "?wbid vocab:weibo_uid '%s'" % uid,
@@ -438,7 +457,6 @@ def getUserWeibo(uid, page):
         ans_elem["content"] = data["content"]["value"]
         ans_elem["senderUsername"] = getProfile(uid)["username"]
         ans.append(ans_elem)
-        # print(ans)
 
     return {
         'state': True,
@@ -446,6 +464,9 @@ def getUserWeibo(uid, page):
     }
 
 def getFollowingsWeibo(uid, page):
+
+    if not check_uid_existence(uid):
+        return { 'state': False, 'results': [] }
 
     # Two queries. maybe able to merge into one query
     following_list = _get_following_user_ids(uid)

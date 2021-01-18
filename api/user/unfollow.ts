@@ -14,6 +14,8 @@ export interface UnfollowUserSchema {
   responses: {
     /** 取消关注成功 */
     200: {};
+    /**  不能关注自己 */
+    400: {};
     /** 不存在这个用户 */
     404: {};
     /** 本来就没有关注这个用户 */

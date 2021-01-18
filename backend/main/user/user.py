@@ -20,7 +20,6 @@ def register_api():
     # TODO 
     # 注册函数：完成用户注册，返回用户ID
     result = register(username,password,datetime.utcnow().isoformat())
-    print(result)
 
     if(result['state']): 
         token = encodeToken(result['userId'])
@@ -71,6 +70,8 @@ def change_follow_api():
             return Response(status=200)
         elif result['msg']=='Inexist':
             return Response(status=404)
+        elif result['msg'] == "Circular":
+            return Response(status=400)
         else:
             return Response(status=409)
 
@@ -81,6 +82,8 @@ def change_follow_api():
         result = unfollow(userID,targetID)
         if result['state']:
             return Response(status=200)
+        elif result['msg'] == "Circular":
+            return Response(status=400)
         elif result['msg']=='Inexist':
             return Response(status=404)
         else:

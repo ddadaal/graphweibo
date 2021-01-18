@@ -43,7 +43,6 @@ def getWeibo():
         result = getUserWeibo(querystr, page)
         if result['state']:
             ans, count = result['result']
-            print(ans)
             return Response(json.dumps({'results': ans, 'totalCount': count }), status=200, content_type='application/json')
         else:
             return Response(status=404)
@@ -65,7 +64,7 @@ def getAllFollowingsWeibo():
     if result['state']:
         return Response(json.dumps({'results': result['results']}), status=200, content_type='application/json')
     else:
-        return Response(status=404)
+        return Response(status=401)
 
 # 获得系统中最新的10条微博
 @weibo.route("/new", methods=['GET'])

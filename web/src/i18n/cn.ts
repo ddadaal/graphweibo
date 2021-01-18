@@ -27,6 +27,7 @@ export default {
         unfollowComplete: "取消关注成功！",
         queryConnection: "关注关系",
         loginToFollow: "登录以关注Ta",
+        self: "自己",
       },
       tagInput: {
         placeholder: "按下回车以增加一项。",

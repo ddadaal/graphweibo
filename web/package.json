@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "@artsy/fresnel": "^1.3.1",
-    "@use-it/event-listener": "^0.1.6",
     "graphweibo-api": "file:../api",
     "grommet": "^2.16.2",
     "grommet-icons": "^4.5.0",
@@ -27,6 +26,7 @@
     "react-dom": "17.0.1",
     "react-helmet": "^6.1.0",
     "react-toastify": "^6.2.0",
+    "react-use": "^15.3.8",
     "simstate": "^3.0.0",
     "simstate-i18n": "^2.1.0",
     "styled-components": "^5.2.1",

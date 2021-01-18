@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { isValidElement, useCallback, useEffect, useRef, useState } from "react";
 import { Anchor, Box, InfiniteScroll, Paragraph } from "grommet";
 import { WeiboInput } from "src/components/WeiboInput";
 import { NextPage } from "next";
@@ -14,6 +14,10 @@ import { useStore } from "simstate";
 import { useHttpRequest } from "src/utils/http";
 import { LocalizedString } from "simstate-i18n";
 import { lang } from "src/i18n";
+import { isInViewport } from "src/utils/dom";
+import { throttle } from "src/utils/throttle";
+import { useWindowScroll } from "react-use";
+import { isServer } from "src/utils/isServer";
 
 const root = lang.pages.index;
 
@@ -43,12 +47,23 @@ const Home: NextPage<Props> = (props) => {
 
   const request = useHttpRequest(setLoading);
 
-  const onMore = () => request(async () => {
+  const onMore = useCallback(() => request(async () => {
     const newPage = page.current + 1;
     const newWeibos = await load(userStore.user, newPage);
     page.current = newPage;
     setItems((items) => [...items, ...newWeibos.results ]);
-  });
+  }), [page, userStore.user]);
+
+  const moreRef = useRef<HTMLDivElement | null>(null);
+
+  const { x, y } = useWindowScroll();
+  console.log(x, y);
+  useEffect(() => {
+    console.log(x, y);
+    if (isInViewport(moreRef.current!)) {
+      onMore();
+    }
+  }, [x, y]);
 
   const reload = useCallback(() => {
     request(async () => {
@@ -78,7 +93,7 @@ const Home: NextPage<Props> = (props) => {
             </Box>
           )}
         </InfiniteScroll>
-        <Box pad="small" flex fill border align="center" >
+        <Box pad="small" flex fill border align="center" ref={moreRef}>
           <Anchor disabled={loading} onClick={onMore}>
             <LocalizedString id={loading ? root.moreLoading : root.more}/>
           </Anchor>
