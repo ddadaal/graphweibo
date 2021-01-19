@@ -13,7 +13,7 @@ Port = 9000
 username = "root"
 password = "123456"
 
-database_name = "Weibo"
+database_name = "weibo3"
 
 prefix = """prefix vocab:   <file:///home/fxb/d2rq/vocab/>
             prefix user:      <file:///home/fxb/d2rq/graph_dump.nt#user/>
@@ -26,6 +26,7 @@ page_size = 10
 gc = GstoreConnector.GstoreConnector(IP, Port, username, password)
 
 def query(sparql: str):
+    print(sparql)
     resp = gc.query(database_name, "json", sparql)
     print(resp)
     return json.loads(resp)
@@ -50,7 +51,6 @@ def register(uname, pwd, register_time):
     sparql = prefix + f"""
         insert data {{
             user:{uid} vocab:user_pwd '{pwd}';
-                    vocab:user_uid '{uid}';
                     vocab:user_name '{uname}';
                     vocab:user_created_at '{register_time}';
                     vocab:user_statusesnum "0"^^xsd:integer;
@@ -469,7 +469,7 @@ def getUserWeibo(uid, page):
 def getFollowingsWeibo(uid, page):
 
     if not check_uid_existence(uid):
-        return { 'state': False, 'results': [] }
+      return { 'state': False, 'results': [] }
 
     # Two queries. maybe able to merge into one query
     following_list = _get_following_user_ids(uid)
