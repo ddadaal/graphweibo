@@ -27,7 +27,7 @@ gc = GstoreConnector.GstoreConnector(IP, Port, username, password)
 
 def query(sparql: str):
     resp = gc.query(database_name, "json", sparql)
-    # print(resp)
+    print(resp)
     return json.loads(resp)
 
 def ask_query(sparql: str) -> bool:
@@ -58,7 +58,7 @@ def register(uname, pwd, register_time):
                     vocab:user_friendsnum "0"^^xsd:integer.
         }}"""
     resp = query(sparql)
-    resp = gc.checkpoint("weibo")
+    resp = gc.checkpoint(database_name)
     
     return {
         "state": True,
@@ -151,7 +151,7 @@ def follow(uid1, uid2):
         }}
     """
     resp = query(sparql)
-    resp = gc.checkpoint("weibo")
+    resp = gc.checkpoint(database_name)
 
     # update profile
 
@@ -174,7 +174,7 @@ def follow(uid1, uid2):
         }}
     """ 
     resp = query(sparql)
-    resp = gc.checkpoint("weibo")
+    resp = gc.checkpoint(database_name)
 
     return {
         'state': True,
@@ -198,7 +198,7 @@ def unfollow(uid1, uid2):
         }}
     """
     resp = query(sparql)
-    resp = gc.checkpoint("weibo")
+    resp = gc.checkpoint(database_name)
 
     
     # update profile
@@ -220,7 +220,7 @@ def unfollow(uid1, uid2):
         }}
     """ 
     resp = query(sparql)
-    resp = gc.checkpoint("weibo")
+    resp = gc.checkpoint(database_name)
     
     return {
         'state': True,
@@ -424,7 +424,7 @@ def postWeibo(uid, content):
         }}
     """ 
     resp = query(sparql)
-    resp = gc.checkpoint("weibo")
+    resp = gc.checkpoint(database_name)
     
     return {
         'state': True,
