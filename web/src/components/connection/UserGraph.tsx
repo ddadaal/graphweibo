@@ -14,15 +14,10 @@ const colors = {
 
 };
 
-interface User {
-  userId: string;
-  username: string;
-}
-
 interface Props {
-  fromUser: User;
-  toUser: User;
-  intermediateUsers: User[];
+  fromId: string;
+  toId: string;
+  usernames: Record<string, string>;
   // id of users
   paths: string[][];
 }
@@ -32,7 +27,7 @@ export const UserGraph: React.FC<Props> = (props) => {
   const themeStore = useStore(ThemeStore);
 
 
-  const { fromUser, toUser, intermediateUsers, paths } = props;
+  const { fromId, toId, usernames, paths } = props;
 
   // redraw graph when body resized
 
@@ -49,15 +44,15 @@ export const UserGraph: React.FC<Props> = (props) => {
       });
     });
 
-    const nodes =[
-      { id: fromUser.userId, label: fromUser.username, color: colors.from },
-      { id: toUser.userId, label: toUser.username, color: colors.to },
-      ...intermediateUsers.map(({ userId: id, username }) =>
-        ({ id, label: username, color: colors.intermediate })),
-    ];
+    const nodes = Object.entries(usernames).map(([userId, username]) => ({
+      id: userId,
+      label: username,
+      color: userId == fromId ? colors.from
+        : userId == toId ? colors.to :colors.intermediate,
+    }));
 
     return { edges: new DataSet(edges), nodes: new DataSet(nodes) };
-  }, [fromUser, toUser, intermediateUsers, paths, themeStore.theme]);
+  }, [usernames, paths, themeStore.theme]);
 
   return (
     <VisGraph

@@ -1,10 +1,12 @@
 from main import weibo
 from typing import List, Optional, Tuple
 import data.GstoreConnector as GstoreConnector
+import os
 import sys
 import random
 import json
 import datetime
+import functools
 
 IP = "127.0.0.1"
 Port = 9000
@@ -48,6 +50,7 @@ def register(uname, pwd, register_time):
     sparql = prefix + f"""
         insert data {{
             user:{uid} vocab:user_pwd '{pwd}';
+                    vocab:user_uid '{uid}';
                     vocab:user_name '{uname}';
                     vocab:user_created_at '{register_time}';
                     vocab:user_statusesnum "0"^^xsd:integer;
@@ -536,6 +539,91 @@ def getNewWeibos(page):
         'state': True,
         'result': ans,
     }
+
+def query_paths(uid1: str, uid2: str, depth: int) -> List[List[str]]:
+    results = []
+
+    if depth == 1:
+        q = prefix + f"""
+        ask where {{
+            ?x vocab:userrelation_suid '{uid1}' .
+            ?x vocab:userrelation_tuid '{uid2}' .
+        }}
+        """
+
+        direct_connect = ask_query(q)
+        if direct_connect:
+            results.append([uid1, uid2])
+        return results
+    
+    q = prefix + f"""
+    select * where {{
+        {os.linesep.join((f'''
+            ?r{i} vocab:userrelation_suid ?mid_{i} .
+            ?r{i} vocab:userrelation_tuid ?mid_{i+1} .
+            ''' for i in range(depth)))
+            .replace("?mid_0", f"'{uid1}'")
+            .replace(f"?mid_{depth}", f"'{uid2}'")
+        }
+    }}
+    """
+
+    resp = query(q)
+
+    for binding in resp["results"]["bindings"]:
+        # each binding is a path
+        result = depth * [None]
+
+        for key, value in binding.items():
+            splitted = key.split("_")
+            if len(splitted) == 2:
+                index = int(splitted[-1])
+                if splitted[0] == "mid":
+                    result[index] = value["value"]
+
+        result[0] = uid1       
+        result.append(uid2)
+        results.append(result)
+
+
+    return results
+
+connection_depth_limit = 4
+
+@functools.lru_cache(maxsize=None)
+def _get_username(uid: str) -> str:
+    return getProfile(uid)['username']
+
+def getUserConnection(uid1, uid2):
+    uid1_existence, uid2_existence = check_uid_existence(uid1), check_uid_existence(uid2)
+
+    if not (uid1_existence and uid2_existence):
+        return { 
+            'state': False, 
+            'msg': { 
+                'fromUserNotExists': not uid1_existence,
+                'toUserNotExists': not uid2_existence,
+            }}
+    
+    usernames = { k: _get_username(k) for k in (uid1, uid2) }
+
+    paths = []
+    for d in range(1, connection_depth_limit + 1):
+        paths += query_paths(uid1, uid2, d)
+        for path in paths:
+            for id in path:
+                usernames[id] = _get_username(id)
+
+    return {
+        'state': True,
+        'msg': {
+            'usernames': usernames,
+            'paths': paths
+        }
+    }
+
+    
+    
 
 if __name__ == "__main__":
     # getProfile("2452144190")

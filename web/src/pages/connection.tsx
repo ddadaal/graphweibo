@@ -24,11 +24,16 @@ const root = lang.pages.connection;
 const api = getApi(userApi);
 
 type Props = SSRPageProps<{
-  response: UserConnectionSchema["responses"]["200"] | null;
+  data: {
+    fromId: string;
+    toId: string;
+    response: UserConnectionSchema["responses"]["200"];
+  } | null;
 }>;
 
 const getConnection = ([fromId, toId]: [string, string]) =>
-  api.getUserConnection({ query: { fromUserId: fromId, toUserId: toId } });
+  api.getUserConnection({ query: { fromUserId: fromId, toUserId: toId } })
+    .then((r) => ({ fromId, toId, response: r }));
 
 interface SearchQuery {
   from?: string;
@@ -49,7 +54,7 @@ export const ConnectionPage: NextPage<Props> = (props) => {
 
   const { data, isPending, run } = useAsync({
     deferFn: getConnection,
-    initialValue: props.response,
+    initialValue: props.data,
     onReject: errorHandler,
   });
 
@@ -99,7 +104,14 @@ export const ConnectionPage: NextPage<Props> = (props) => {
         { isServer() ? undefined
           : (
             <OverlayLoading loading={isPending}>
-              { data ? <UserGraph {...data} /> :
+              { data ? (
+                <UserGraph
+                  fromId={data.fromId}
+                  toId={data.toId}
+                  usernames={data.response.usernames}
+                  paths={data.response.paths}
+                />
+              ) :
                 (!fromUser || !toUser) ? (
                   <Box alignSelf="center">
                     <Paragraph>
@@ -119,10 +131,10 @@ export const ConnectionPage: NextPage<Props> = (props) => {
 ConnectionPage.getInitialProps = async (context) => {
   const { from, to } = context.query as SearchQuery;
 
-  if (!from || !to) { return { response: null };}
+  if (!from || !to) { return { data: null }; }
 
   const data = await getConnection([from, to])
-    .then((r) => ({ response: r }))
+    .then((r) => ({ data: r }))
     .catch((r: HttpError) => ({ error: r }));
 
   return data;

@@ -25,9 +25,7 @@ const dummyResults = [
 
 // example graph
 const exampleGraph = {
-  fromUser: { userId: "1", username: "user1" },
-  toUser: { userId: "5", username: "user5" },
-  intermediateUsers: range(2, 5).map((i) => ({ userId: `${i}`, username: `user${i}` })),
+  usernames: range(1, 6).reduce((prev, curr) => ({ ...prev, [curr]: `user${curr}` }), {}),
   paths: [
     ["1", "5"],
     ["1", "2", "3", "5"],

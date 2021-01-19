@@ -1,13 +1,11 @@
 import { UserResult } from "graphweibo-api/user/search";
-import { Box, TextInput } from "grommet";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { TextInput } from "grommet";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocalized } from "simstate-i18n";
 import { getApi } from "src/apis";
 import { userApi } from "src/apis/user";
 import { lang } from "src/i18n";
 import { UserInfo } from "src/models/UserInfo";
-import { throttle } from "src/utils/throttle";
-import useConstant from "src/utils/useConstant";
 
 const root = lang.components.userSelectTextBox;
 
@@ -38,13 +36,13 @@ export const UserSelectTextBox: React.FC<Props> = (props) => {
   const lastRequestCompleted = useRef(true);
 
   const onInput = async (e) => {
-    const newValue = e.target.value;
+    const newValue = e.target.value as string;
     setText(newValue);
     props.onSelected(null);
     if (lastRequestCompleted.current) {
       lastRequestCompleted.current = false;
       try {
-        const searchResult = await api.search({ query: { query: newValue } });
+        const searchResult = await api.search({ query: { query: newValue.trim() } });
         setSuggestions(searchResult.results);
       } catch (e) {
       // ignored

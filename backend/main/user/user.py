@@ -1,7 +1,7 @@
 #coding:utf-8 
 #user 
 from main.utils import get_page
-from data.utils import follow, getFollowers, getFollowings, login, register, searchUserById, searchUserByQuery, unfollow
+from data.utils import follow, getFollowers, getFollowings, getUserConnection, login, register, searchUserById, searchUserByQuery, unfollow
 from flask import Blueprint #, render_template, redirect 
 from flask import request, json, jsonify, Response
 from main.auths import *
@@ -182,11 +182,9 @@ def connection_api():
     fromUser = data['fromUserId']
     toUser = data['toUserId']
 
-    result = getUserConnection(fromUser,toUser)
+    result = getUserConnection(fromUser, toUser)
 
     if result['state']:
-        result.pop('state')
-        return Response(json.dumps(result), status=200, content_type='application/json')
+        return Response(json.dumps(result["msg"]), status=200, content_type='application/json')
     else:
-        result.pop('state')
-        return Response(json.dumps(result),status=404)
+        return Response(json.dumps(result["msg"]),status=404)
