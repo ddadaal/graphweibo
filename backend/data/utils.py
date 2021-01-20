@@ -36,7 +36,11 @@ def ask_query(sparql: str) -> bool:
     return resp["results"]["bindings"][0]["askResult"]["value"]
 
 def check_uid_existence(uid: str) -> bool:
-    return ask_query(prefix + f"ask where {{ user:{uid} ?v ?o }}")
+    return ask_query(prefix + f"""
+      ask where {{ 
+        ?x vocab:user_uid '{uid}' .
+      }}
+    """)
 
 user_id_length = 10
 weibo_id_length = 16
@@ -57,14 +61,15 @@ def register(uname, pwd, register_time: datetime.datetime):
     # 注意整数类型字面量需要写成"0"^^xsd:integer
     sparql = prefix + f"""
         insert data {{
-            user:{uid} vocab:user_pwd '{pwd}'.
-            user:{uid} vocab:user_uid '{uid}' .
-            user:{uid} vocab:user_name '{uname}' .
-            user:{uid} vocab:user_created_at '{register_time.replace(microsecond=0).isoformat()}' .
+            user:{uid} vocab:user_pwd "{pwd}".
+            user:{uid} vocab:user_uid "{uid}" .
+            user:{uid} vocab:user_name "{uname}" .
             user:{uid} vocab:user_statusesnum "0"^^xsd:integer .
             user:{uid} vocab:user_followersnum "0"^^xsd:integer .
             user:{uid} vocab:user_friendsnum "0"^^xsd:integer .
         }}"""
+
+    # user:{uid} vocab:user_created_at "{register_time.replace(microsecond=0).isoformat()}"^^xsd:dateTime .
 
     print(sparql)
     resp = query(sparql)
@@ -104,12 +109,13 @@ def getProfile(uid):
         select ?username ?registerTime ?weiboCount ?followersCount ?followingsCount where {{
             ?x vocab:user_uid '{uid}' .
             ?x vocab:user_name ?username .
-            ?x vocab:user_created_at ?registerTime .
             ?x vocab:user_statusesnum ?weiboCount .
             ?x vocab:user_followersnum ?followersCount .
             ?x vocab:user_friendsnum ?followingsCount .
         }}
     """
+
+            #?x vocab:user_created_at ?registerTime .
 
     def get_value(resp, key: str):
         return resp["results"]["bindings"][0][key]["value"]
@@ -118,7 +124,7 @@ def getProfile(uid):
     ans = { 
         "userId": uid,
         "username": get_value(resp, "username"),
-        "registerTime": get_value(resp, "registerTime"),
+        # "registerTime": get_value(resp, "registerTime"),
         "weiboCount": int(get_value(resp, "weiboCount")),
         "followersCount": int(get_value(resp, "followersCount")),
         "followingsCount": int(get_value(resp, "followingsCount")),
@@ -511,7 +517,7 @@ def getFollowingsWeibo(uid, page):
     ans = []
     for data in resp:
         ans_elem = {}
-        ans_elem["weiboId"] = data["wbid"]["value"][-16:]
+        ans_elem["weiboId"] = data["wbid"]["value"][-weibo_id_length:]
         sender_id = data["uid"]["value"]
         ans_elem["senderId"] = sender_id
         ans_elem["sendTime"] = data["sendTime"]["value"]
@@ -546,7 +552,7 @@ def getNewWeibos(page):
     ans = []
     for data in resp:
         ans_elem = {}
-        ans_elem["weiboId"] = data["wbid"]["value"][-16:]
+        ans_elem["weiboId"] = data["wbid"]["value"][-weibo_id_length:]
         ans_elem["senderId"] = data["senderId"]["value"]
         ans_elem["sendTime"] = data["sendTime"]["value"]
         ans_elem["content"] = data["content"]["value"]
