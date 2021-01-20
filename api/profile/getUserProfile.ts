@@ -15,7 +15,7 @@ export interface GetUserProfileSchema {
         /** 用户名 */
         username: string;
         /** 注册时间。应该是一个ISO 8601字符串 */
-        registerTime: string;
+        registerTime?: string;
         /** 微博数 */
         weiboCount: number;
         /** 关注的人数 */

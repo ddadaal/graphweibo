@@ -10,7 +10,7 @@ const root = lang.pages.profile.accountProfile;
 interface Props {
   username: string;
   userId: string;
-  registerTime: string;
+  registerTime?: string;
 }
 
 const AccountInfoRow: React.FC<{
@@ -39,10 +39,14 @@ export const AccountProfileShowcase: React.FC<Props> = ({
           {username}
         </Heading>
         <AccountInfoRow textId={root.userId} value={userId} />
-        <AccountInfoRow
-          textId={root.registerTime}
-          value={formatDateTime(registerTime)}
-        />
+        {
+          registerTime ? (
+            <AccountInfoRow
+              textId={root.registerTime}
+              value={formatDateTime(registerTime)}
+            />
+          ) : undefined
+        }
       </Box>
     </Box>
   );
