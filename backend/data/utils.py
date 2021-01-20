@@ -15,12 +15,13 @@ password = "123456"
 
 database_name = "weibo2"
 
-prefix = """
+dump_file_path = "file:///home/fxb/d2rq/graph_dump3.nt"
+
+prefix = f"""
             prefix vocab:   <file:///home/fxb/d2rq/vocab/>
-            prefix user:      <file:///home/fxb/d2rq/graph_dump3.nt#user/>
-            prefix weibo:     <file:///home/fxb/d2rq/graph_dump3.nt#weibo/>
+            prefix user:      <{dump_file_path}#user/>
+            prefix weibo:     <{dump_file_path}#weibo/>
             PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-            prefix userrrelation: <file:///home/fxb/d2rq/graph_dump3.nt#userrelation/>
             """
 
 page_size = 10
@@ -28,7 +29,7 @@ page_size = 10
 gc = GstoreConnector.GstoreConnector(IP, Port, username, password)
 
 def query(sparql: str):
-    # print(sparql)
+    print(sparql)
     resp = gc.query(database_name, "json", sparql)
     # print(resp)
     return json.loads(resp)
@@ -162,8 +163,8 @@ def follow(uid1, uid2):
     # insert rdf 
     sparql = prefix + f"""
         insert data {{
-            userrelation:{uid1}/{uid2} vocab:userrelation_tuid '{uid2}';
-                                       vocab:userrelation_suid '{uid1}'.
+            <{dump_file_path}#userrelation/{uid1}/{uid2}> vocab:userrelation_tuid '{uid2}';
+                                                          vocab:userrelation_suid '{uid1}'.
         }}
     """
     resp = query(sparql)
@@ -211,8 +212,8 @@ def unfollow(uid1, uid2):
     
     sparql = prefix + f"""
         DELETE DATA {{
-            userrelation:{uid1}/{uid2} vocab:userrelation_tuid '{uid2}';
-                                       vocab:userrelation_suid '{uid1}'.
+            <{dump_file_path}#userrelation/{uid1}/{uid2}> vocab:userrelation_tuid '{uid2}';
+                                                          vocab:userrelation_suid '{uid1}'.
         }}
     """
     resp = query(sparql)
