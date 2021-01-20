@@ -13,7 +13,7 @@ Port = 9000
 username = "root"
 password = "123456"
 
-database_name = "weibo3"
+database_name = "weibo5"
 
 dump_file_path = "file:///home/fxb/d2rq/graph_dump3.nt"
 
@@ -127,7 +127,7 @@ def getProfile(uid):
     ans = { 
         "userId": uid,
         "username": get_value(resp, "username"),
-        "registerTime": get_value(resp, "registerTime"),
+        # "registerTime": get_value(resp, "registerTime"),
         "weiboCount": int(get_value(resp, "weiboCount")),
         "followersCount": int(get_value(resp, "followersCount")),
         "followingsCount": int(get_value(resp, "followingsCount")),
