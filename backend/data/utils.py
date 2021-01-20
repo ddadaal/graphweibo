@@ -13,7 +13,7 @@ Port = 9000
 username = "root"
 password = "123456"
 
-database_name = "weibo0"
+database_name = "weibo1"
 
 prefix = """prefix vocab:   <file:///home/fxb/d2rq/vocab/>
             prefix user:      <file:///home/fxb/d2rq/graph_dump.nt#user/>
