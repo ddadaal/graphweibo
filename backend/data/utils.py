@@ -13,7 +13,7 @@ Port = 9000
 username = "root"
 password = "123456"
 
-database_name = "weibo2"
+database_name = "weibo3"
 
 dump_file_path = "file:///home/fxb/d2rq/graph_dump3.nt"
 
@@ -67,12 +67,12 @@ def register(uname, pwd, register_time: datetime.datetime):
             user:{uid} vocab:user_pwd "{pwd}".
             user:{uid} vocab:user_uid "{uid}" .
             user:{uid} vocab:user_name "{uname}" .
+            user:{uid} vocab:user_created_at "{register_time.replace(microsecond=0).isoformat()}"^^xsd:dateTime .
             user:{uid} vocab:user_statusesnum "0"^^xsd:integer .
             user:{uid} vocab:user_followersnum "0"^^xsd:integer .
             user:{uid} vocab:user_friendsnum "0"^^xsd:integer .
         }}"""
 
-    # user:{uid} vocab:user_created_at "{register_time.replace(microsecond=0).isoformat()}"^^xsd:dateTime .
 
     print(sparql)
     resp = query(sparql)
@@ -112,13 +112,13 @@ def getProfile(uid):
         select ?username ?registerTime ?weiboCount ?followersCount ?followingsCount where {{
             ?x vocab:user_uid '{uid}' .
             ?x vocab:user_name ?username .
+            ?x vocab:user_created_at ?registerTime .
             ?x vocab:user_statusesnum ?weiboCount .
             ?x vocab:user_followersnum ?followersCount .
             ?x vocab:user_friendsnum ?followingsCount .
         }}
     """
 
-            #?x vocab:user_created_at ?registerTime .
 
     def get_value(resp, key: str):
         return resp["results"]["bindings"][0][key]["value"]
@@ -127,7 +127,7 @@ def getProfile(uid):
     ans = { 
         "userId": uid,
         "username": get_value(resp, "username"),
-        # "registerTime": get_value(resp, "registerTime"),
+        "registerTime": get_value(resp, "registerTime"),
         "weiboCount": int(get_value(resp, "weiboCount")),
         "followersCount": int(get_value(resp, "followersCount")),
         "followingsCount": int(get_value(resp, "followingsCount")),
