@@ -66,7 +66,7 @@ const DashboardFollowingsPage: NextPage<Props> = (props) => {
           itemsPerPage={10}
           totalItemsCount={props.totalCount}
           getUrl={(i) => ({
-            pathname: "/profile/[userId]/followers",
+            pathname: "/profile/[userId]/followings",
             query: { userId: props.userId, page: i },
           })}
         />
