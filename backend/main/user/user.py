@@ -146,7 +146,7 @@ def search_api():
     if identity['state']:
         userID = identity['msg']
     else:
-        userID = ''
+        userID = None
     #获取查询字符串
     # NOTE 下述方法不能获得GET请求的querystring。
     # data = json.loads(request.get_data())

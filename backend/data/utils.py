@@ -401,8 +401,8 @@ def searchUserByQuery(q, uid, page):
         d["weiboCount"] = resp["weiboCount"]["value"]
         d["followersCount"] = resp["followersCount"]["value"]
         d["followingsCount"] = resp["followingsCount"]["value"]
-        d["followed"] = isFollow(d["userId"], uid)
-        d["following"] = isFollow(uid, d["userId"])
+        d["followed"] = uid and isFollow(d["userId"], uid)
+        d["following"] = uid and isFollow(uid, d["userId"])
         user_list.append(d)
     return {
         'totalCount': count,
