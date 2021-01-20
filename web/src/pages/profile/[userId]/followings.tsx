@@ -84,10 +84,9 @@ DashboardFollowingsPage.getInitialProps = async (ctx) => {
 
   const page = queryToIntOrDefault(ctx.query.page, 1);
 
-
   const data = await Promise.all([
     api.getUserProfile({ query: { userId } }),
-    uapi.getFollowings({ query: { userId } }),
+    uapi.getFollowings({ query: { userId, page } }),
   ])
     .then(([{ profile  },{ followings, totalCount }]) =>
       ({ profile, followings, page, userId, totalCount }))
