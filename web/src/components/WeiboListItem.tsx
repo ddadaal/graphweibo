@@ -2,6 +2,7 @@ import {  Box, Text } from "grommet";
 import React from "react";
 import { WeiboInfo } from "src/models/weibo";
 import { formatDateTime } from "src/utils/datetime";
+import { AnchorLink } from "./AnchorLink";
 import { DummyAvatar } from "./DummyAvatar";
 
 interface Props {
@@ -22,9 +23,14 @@ export const WeiboListItem: React.FC<Props> = ({ weibo }) => {
       </Box>
       <Box gap="small">
         <Box>
-          <Text weight="bold">
+          <AnchorLink href={{
+            pathname: "/profile/[userId]",
+            query: { userId: weibo.senderId },
+          }}
+          as={`/profile/${weibo.senderId}`}
+          >
             {weibo.senderUsername}
-          </Text>
+          </AnchorLink>
           <Text size="small">
             {formatDateTime(weibo.sendTime)}
           </Text>
