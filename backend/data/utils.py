@@ -13,12 +13,14 @@ Port = 9000
 username = "root"
 password = "123456"
 
-database_name = "weibo1"
+database_name = "weibo2"
 
-prefix = """prefix vocab:   <file:///home/fxb/d2rq/vocab/>
-            prefix user:      <file:///home/fxb/d2rq/graph_dump.nt#user/>
-            prefix weibo:     <file:///home/fxb/d2rq/graph_dump.nt#weibo/>
+prefix = """
+            prefix vocab:   <file:///home/fxb/d2rq/vocab/>
+            prefix user:      <file:///home/fxb/d2rq/graph_dump3.nt#user/>
+            prefix weibo:     <file:///home/fxb/d2rq/graph_dump3.nt#weibo/>
             PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+            prefix userrrelation: <file:///home/fxb/d2rq/graph_dump3.nt#userrelation/>
             """
 
 page_size = 10
@@ -28,7 +30,7 @@ gc = GstoreConnector.GstoreConnector(IP, Port, username, password)
 def query(sparql: str):
     # print(sparql)
     resp = gc.query(database_name, "json", sparql)
-    print(resp)
+    # print(resp)
     return json.loads(resp)
 
 def ask_query(sparql: str) -> bool:
@@ -151,12 +153,7 @@ def follow(uid1, uid2):
             "msg": 'uid2 inexist',
         }
 
-    # query if uid1 have relation with uid2
-    sparql_q_follow = "select ?x where\
-            {<file:///home/fxb/d2rq/graph_dump.nt#userrelation/%s/%s> <file:///home/fxb/d2rq/vocab/userrelation_tuid> ?x}"%(uid1, uid2)
-    resp = query(sparql_q_follow)["results"]["bindings"]
-
-    if len(resp)!=0:
+    if isFollow(uid1, uid2):
         return {
             'state': False,
             "msg": 'AlreadyFollowed',
@@ -165,8 +162,8 @@ def follow(uid1, uid2):
     # insert rdf 
     sparql = prefix + f"""
         insert data {{
-            <file:///home/fxb/d2rq/graph_dump.nt#userrelation/{uid1}/{uid2}> vocab:userrelation_tuid '{uid2}';
-                                                                             vocab:userrelation_suid '{uid1}'.
+            userrelation:{uid1}/{uid2} vocab:userrelation_tuid '{uid2}';
+                                       vocab:userrelation_suid '{uid1}'.
         }}
     """
     resp = query(sparql)
@@ -178,6 +175,8 @@ def follow(uid1, uid2):
     followingsnum1 = getProfile(uid1)["followingsCount"]
     followersnum2 = getProfile(uid2)["followersCount"]
 
+    # DELETE INSERT WHERE in one query doesn't work
+    # separate
     sparql = prefix + f"""
         DELETE {{
             user:{uid1} vocab:user_friendsnum "{followingsnum1}"^^xsd:integer .
@@ -212,8 +211,8 @@ def unfollow(uid1, uid2):
     
     sparql = prefix + f"""
         DELETE DATA {{
-            <file:///home/fxb/d2rq/graph_dump.nt#userrelation/{uid1}/{uid2}> vocab:userrelation_tuid '{uid2}';
-                                                                                vocab:userrelation_suid '{uid1}'.
+            userrelation:{uid1}/{uid2} vocab:userrelation_tuid '{uid2}';
+                                       vocab:userrelation_suid '{uid1}'.
         }}
     """
     resp = query(sparql)
@@ -249,14 +248,12 @@ def unfollow(uid1, uid2):
 def isFollow(uid1, uid2):
     # return true if uid1 follow uid2
     sparql_q_follow = prefix+ f"""
-        select ?x where\
-            {{
+      ask where {{
                 ?x vocab:userrelation_suid '{uid1}' .
                 ?x vocab:userrelation_tuid '{uid2}' .
             }}
     """
-    resp = query(sparql_q_follow)["results"]["bindings"]
-    return len(resp) != 0
+    return ask_query(sparql_q_follow)
 
 
 def getFollowers(uid, myid, page):
@@ -368,7 +365,6 @@ def searchUserById(uid, myid):
     return d
 
 def searchUserByQuery(q, uid, page):
-
     clause = [
         "?x vocab:user_name ?username",
         "?x vocab:user_uid ?uid",
