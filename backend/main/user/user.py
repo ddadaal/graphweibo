@@ -19,7 +19,7 @@ def register_api():
 
     # TODO 
     # 注册函数：完成用户注册，返回用户ID
-    result = register(username,password,datetime.utcnow().isoformat())
+    result = register(username,password,datetime.utcnow())
 
     if(result['state']): 
         token = encodeToken(result['userId'])
