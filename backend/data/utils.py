@@ -29,9 +29,9 @@ page_size = 10
 gc = GstoreConnector.GstoreConnector(IP, Port, username, password)
 
 def query(sparql: str):
-    print(sparql)
+    # print(sparql)
     resp = gc.query(database_name, "json", sparql)
-    # print(resp)
+    # print("Response: %s" % resp)
     return json.loads(resp)
 
 def ask_query(sparql: str) -> bool:
